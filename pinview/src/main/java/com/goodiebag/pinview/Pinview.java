@@ -61,6 +61,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         mSplitWidth *= DENSITY;
         initAttributes(context, attrs, defStyleAttr);
         params = new LayoutParams(mPinWidth, mPinHeight);
+        setOrientation(HORIZONTAL);
         for (int i = 0; i < mPins; i++) {
             editTextList.add(i, new EditText(getContext()));
         }
@@ -99,18 +100,21 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         styleEditText.setFilters(filters);
         styleEditText.setLayoutParams(params);
         styleEditText.setGravity(Gravity.CENTER);
-        styleEditText.setBackground(mPinBackground);
+        //StateListDrawable Cannot be shared so clone it before its assigned to any other view.
+        Drawable clone = mPinBackground.getConstantState().newDrawable();
+        styleEditText.setBackground(clone);
         styleEditText.setTag(tag);
         styleEditText.addTextChangedListener(this);
         styleEditText.setOnFocusChangeListener(this);
         styleEditText.setOnKeyListener(this);
+        styleEditText.clearFocus();
         this.addView(styleEditText);
     }
 
     private String getResultantString(){
         StringBuilder sb = new StringBuilder();
         for(EditText et : editTextList){
-            if(sb.length() <= 4)
+            if(sb.length() <= mPins)
                 sb.append(et.getText().toString());
         }
         Log.d("answer" , sb.toString());
@@ -121,22 +125,11 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     public void onFocusChange(View view, boolean isFocused) {
         if (isFocused)
             currentFocus = view;
+        else{
+            view.clearFocus();
+        }
+        Log.d("focus", "" + view.getTag() + isFocused);
     }
-
-//    @Override
-//    protected void drawableStateChanged() {
-//        super.drawableStateChanged();
-//        if (mPinBackground != null && mPinBackground.isStateful()) {
-//            int[] state = getDrawableState();
-//            for (EditText txt : editTextList) {
-//                if (txt == currentFocus)
-//                    currentFocus.getBackground().setState(state);
-//                else
-//                    txt.getBackground().setState(new int[]{});
-//            }
-//        }
-//        invalidate();
-//    }
 
     @Override
     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -149,6 +142,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         if (charSequence.length() == 1 && currentFocus != null) {
             currentTag = Integer.parseInt(currentFocus.getTag().toString());
             if (currentTag < mPins - 1) {
+                editTextList.get(currentTag).clearFocus();
                 editTextList.get(currentTag + 1).requestFocus();
             }
             else {
@@ -171,6 +165,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             currentTag = Integer.parseInt(currentFocus.getTag().toString());
             if (currentTag > 0) {
                 editTextList.get(currentTag).setText("");
+                editTextList.get(currentTag).clearFocus();
                 editTextList.get(currentTag - 1).requestFocus();
             } else {
                 //currentTag has reached zero

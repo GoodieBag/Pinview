@@ -1,26 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#ccc"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="#ccc"
-    android:orientation="vertical"
-    tools:context="com.goodiebag.example.pinview.MainActivity">
-
+    android:paddingTop="@dimen/activity_vertical_margin">
 
     <com.goodiebag.pinview.Pinview
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:pinBackground="@drawable/sample_background"
-        app:pinWidth="40dp"
+        app:pinBackground="@drawable/example_drawable"
         app:pinHeight="50dp"
-        app:splitWidth="20dp"
-        app:pins="5"/>
+        app:pinWidth="50dp"
+        app:pins="4"
+        app:splitWidth="20dp" />
 
 </LinearLayout>
