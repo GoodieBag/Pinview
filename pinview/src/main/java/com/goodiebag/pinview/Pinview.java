@@ -30,7 +30,6 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     private int mPinHeight = 50;
     private int mSplitWidth = 20;
     private Drawable mPinBackground;
-
     View currentFocus = null;
     int currentTag;
 
@@ -108,6 +107,16 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         this.addView(styleEditText);
     }
 
+    private String getResultantString(){
+        StringBuilder sb = new StringBuilder();
+        for(EditText et : editTextList){
+            if(sb.length() <= 4)
+                sb.append(et.getText().toString());
+        }
+        Log.d("answer" , sb.toString());
+        return sb.toString();
+    }
+
     @Override
     public void onFocusChange(View view, boolean isFocused) {
         if (isFocused)
@@ -136,10 +145,12 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
 
     @Override
     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        getResultantString();
         if (charSequence.length() == 1 && currentFocus != null) {
             currentTag = Integer.parseInt(currentFocus.getTag().toString());
-            if (currentTag < mPins - 1)
+            if (currentTag < mPins - 1) {
                 editTextList.get(currentTag + 1).requestFocus();
+            }
             else {
                 //Last Pin box has been reached.
             }
