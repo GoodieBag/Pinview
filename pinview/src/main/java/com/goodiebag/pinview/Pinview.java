@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -16,6 +17,8 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.text.InputType.TYPE_TEXT_VARIATION_NORMAL;
 
 /**
  * Created by pavan on 11/01/17.
@@ -29,6 +32,9 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     private int mPinWidth = 50;
     private int mPinHeight = 50;
     private int mSplitWidth = 20;
+    private int mInputType = TYPE_TEXT_VARIATION_NORMAL;
+
+
     private Drawable mPinBackground;
     View currentFocus = null;
     int currentTag;
@@ -90,6 +96,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             mPinHeight = (int) array.getDimension(R.styleable.Pinview_pinHeight, mPinHeight);
             mPinWidth = (int) array.getDimension(R.styleable.Pinview_pinWidth, mPinWidth);
             mSplitWidth = (int) array.getDimension(R.styleable.Pinview_splitWidth, mSplitWidth);
+            mInputType = array.getInt(R.styleable.Pinview_android_inputType, mInputType);
         }
     }
 
@@ -104,10 +111,10 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         Drawable clone = mPinBackground.getConstantState().newDrawable();
         styleEditText.setBackground(clone);
         styleEditText.setTag(tag);
+        styleEditText.setInputType(mInputType);
         styleEditText.addTextChangedListener(this);
         styleEditText.setOnFocusChangeListener(this);
         styleEditText.setOnKeyListener(this);
-        styleEditText.clearFocus();
         this.addView(styleEditText);
     }
 
@@ -169,6 +176,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
                 editTextList.get(currentTag - 1).requestFocus();
             } else {
                 //currentTag has reached zero
+                editTextList.get(currentTag).setText("");
             }
 
             return true;
