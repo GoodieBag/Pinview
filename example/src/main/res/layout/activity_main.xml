@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,10 +10,21 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="#ccc"
+    android:orientation="vertical"
     tools:context="com.goodiebag.example.pinview.MainActivity">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/example_drawable"/>
 
     <com.goodiebag.pinview.Pinview
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-         />
-</RelativeLayout>
+        app:pinBackground="@drawable/example_drawable"
+        app:pinWidth="40dp"
+        app:pinHeight="50dp"
+        app:splitWidth="20dp"
+        app:pins="5"/>
+
+</LinearLayout>

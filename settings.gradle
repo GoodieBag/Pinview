@@ -1,1 +1,1 @@
-include ':app', ':pinview'
+include ':example', ':pinview'
