@@ -5,7 +5,6 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.InputFilter;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -27,7 +26,7 @@ import static android.text.InputType.TYPE_TEXT_VARIATION_NORMAL;
 public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusChangeListener, View.OnKeyListener {
     private final float DENSITY = getContext().getResources().getDisplayMetrics().density;
     //Potential attributes
-    private int mPins = 4;
+    private int mPinLength = 4;
     private List<EditText> editTextList = new ArrayList<>();
     private int mPinWidth = 50;
     private int mPinHeight = 50;
@@ -68,7 +67,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         initAttributes(context, attrs, defStyleAttr);
         params = new LayoutParams(mPinWidth, mPinHeight);
         setOrientation(HORIZONTAL);
-        for (int i = 0; i < mPins; i++) {
+        for (int i = 0; i < mPinLength; i++) {
             editTextList.add(i, new EditText(getContext()));
         }
     }
@@ -77,7 +76,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     private void styleEditText() {
         if (editTextList.size() > 0) {
             EditText styleEditText;
-            for (int i = 0; i < mPins; i++) {
+            for (int i = 0; i < mPinLength; i++) {
                 styleEditText = editTextList.get(i);
                 generateOneEditText(styleEditText, "" + i);
             }
@@ -92,7 +91,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             if (mPinBackground == null) {
                 mPinBackground = getResources().getDrawable(R.drawable.sample_background);
             }
-            mPins = array.getInt(R.styleable.Pinview_pins, mPins);
+            mPinLength = array.getInt(R.styleable.Pinview_pinLength, mPinLength);
             mPinHeight = (int) array.getDimension(R.styleable.Pinview_pinHeight, mPinHeight);
             mPinWidth = (int) array.getDimension(R.styleable.Pinview_pinWidth, mPinWidth);
             mSplitWidth = (int) array.getDimension(R.styleable.Pinview_splitWidth, mSplitWidth);
@@ -121,7 +120,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     private String getResultantString(){
         StringBuilder sb = new StringBuilder();
         for(EditText et : editTextList){
-            if(sb.length() <= mPins)
+            if(sb.length() <= mPinLength)
                 sb.append(et.getText().toString());
         }
         Log.d("answer" , sb.toString());
@@ -148,7 +147,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         getResultantString();
         if (charSequence.length() == 1 && currentFocus != null) {
             currentTag = Integer.parseInt(currentFocus.getTag().toString());
-            if (currentTag < mPins - 1) {
+            if (currentTag < mPinLength - 1) {
                 editTextList.get(currentTag).clearFocus();
                 editTextList.get(currentTag + 1).requestFocus();
             }

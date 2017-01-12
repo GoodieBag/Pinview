@@ -2,7 +2,7 @@
 <resources>
     <declare-styleable name="Pinview">
         <attr name="pinBackground" format="reference"/>
-        <attr name="pins" format="integer"/>
+        <attr name="pinLength" format="integer"/>
         <attr name="pinWidth" format="dimension"/>
         <attr name="pinHeight" format="dimension"/>
         <attr name="splitWidth" format="dimension"/>
