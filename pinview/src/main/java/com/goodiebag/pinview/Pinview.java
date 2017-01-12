@@ -184,6 +184,8 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     }
 
     private void refresh(){
+        removeAllViews();
+        styleEditText();
         invalidate();
     }
 
