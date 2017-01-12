@@ -23,7 +23,6 @@ import java.util.List;
 
 import static android.text.InputType.TYPE_CLASS_NUMBER;
 import static android.text.InputType.TYPE_CLASS_TEXT;
-import static android.text.InputType.TYPE_TEXT_VARIATION_NORMAL;
 import static android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD;
 
 
@@ -46,7 +45,6 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     private boolean mPassword = false;
     private String mHint = "";
     private InputType inputType = InputType.TEXT;
-
 
 
     private enum InputType {
@@ -242,7 +240,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     }
 
     @Override
-    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int count) {
         if (charSequence.length() == 1 && currentFocus != null) {
             currentTag = Integer.parseInt(currentFocus.getTag().toString());
             if (currentTag < mPinLength - 1) {
@@ -260,8 +258,20 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
                 //Last Pin box has been reached.
             }
 
+        } else if (charSequence.length() == 0) {
+            Log.d("Count", count + "");
+            currentTag = Integer.parseInt(currentFocus.getTag().toString());
+            if (currentTag > 0) {
+                mDelPressed = true;
+                //editTextList.get(currentTag).setText("");
+                editTextList.get(currentTag - 1).requestFocus();
+            } else {
+                if (editTextList.get(currentTag).getText().length() > 0)
+                    editTextList.get(currentTag).setText("");
+            }
+
         }
-        Log.d("Char" , charSequence.toString());
+        Log.d("Count", count + "");
     }
 
     @Override
@@ -273,18 +283,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     public boolean onKey(View view, int i, KeyEvent keyEvent) {
         if ((keyEvent.getAction() == KeyEvent.ACTION_DOWN) && (i == KeyEvent.KEYCODE_DEL)) {
             // Perform action on Del press
-            //Double backspace to delete character
-            //Number pad bugged . Delete the last tile and u cannot enter more texts, but works when u go back to further tiles.
-            currentTag = Integer.parseInt(currentFocus.getTag().toString());
-            if (editTextList.get(currentTag).length() > 0) {
-                editTextList.get(currentTag).setText("");
-                return true;
-            }
-            if (currentTag > 0) {
-                mDelPressed = true;
-                editTextList.get(currentTag - 1).requestFocus();
-            }
-            return true;
+
         }
         return false;
     }
