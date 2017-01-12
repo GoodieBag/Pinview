@@ -6,6 +6,7 @@
         <attr name="pinWidth" format="dimension"/>
         <attr name="pinHeight" format="dimension"/>
         <attr name="splitWidth" format="dimension"/>
+        <attr name="cursorVisible" format="boolean"/>
         <attr name="android:inputType"/>
     </declare-styleable>
 </resources>

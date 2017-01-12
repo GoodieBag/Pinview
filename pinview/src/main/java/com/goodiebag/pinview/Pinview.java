@@ -3,6 +3,7 @@ package com.goodiebag.pinview;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -32,7 +33,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     private int mPinHeight = 50;
     private int mSplitWidth = 20;
     private int mInputType = TYPE_TEXT_VARIATION_NORMAL;
-    private Drawable mPinBackground;
+    private @DrawableRes int mPinBackground=R.drawable.sample_background;
 
     View currentFocus = null;
     int currentTag;
@@ -87,15 +88,14 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     private void initAttributes(Context context, AttributeSet attrs, int defStyleAttr) {
         if (attrs != null) {
             final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.Pinview, defStyleAttr, 0);
-            mPinBackground = array.getDrawable(R.styleable.Pinview_pinBackground);
-            if (mPinBackground == null) {
-                mPinBackground = getResources().getDrawable(R.drawable.sample_background);
-            }
+            //array.
+            mPinBackground = array.getResourceId(R.styleable.Pinview_pinBackground,mPinBackground);
             mPinLength = array.getInt(R.styleable.Pinview_pinLength, mPinLength);
             mPinHeight = (int) array.getDimension(R.styleable.Pinview_pinHeight, mPinHeight);
             mPinWidth = (int) array.getDimension(R.styleable.Pinview_pinWidth, mPinWidth);
             mSplitWidth = (int) array.getDimension(R.styleable.Pinview_splitWidth, mSplitWidth);
             mInputType = array.getInt(R.styleable.Pinview_android_inputType, mInputType);
+            array.recycle();
         }
     }
 
@@ -107,8 +107,8 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         styleEditText.setLayoutParams(params);
         styleEditText.setGravity(Gravity.CENTER);
         //StateListDrawable Cannot be shared so clone it before its assigned to any other view.
-        Drawable clone = mPinBackground.getConstantState().newDrawable();
-        styleEditText.setBackground(clone);
+        //Drawable clone = mPinBackground.mutate(); //.getConstantState().newDrawable();
+        styleEditText.setBackgroundResource(mPinBackground);
         styleEditText.setTag(tag);
         styleEditText.setInputType(mInputType);
         styleEditText.addTextChangedListener(this);
@@ -234,12 +234,12 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         refresh();
     }
 
-    public Drawable getPinBackground() {
+    public @DrawableRes int getPinBackground() {
         return mPinBackground;
     }
 
-    public void setPinBackground(Drawable pinBackground) {
-        this.mPinBackground = pinBackground;
+    public void setPinBackgroundRes(@DrawableRes int res) {
+        this.mPinBackground = res;
         refresh();
     }
 }

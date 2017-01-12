@@ -16,7 +16,6 @@
         android:id="@+id/pinview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:pinBackground="@drawable/example_drawable"
         android:inputType="text"
          />
 
