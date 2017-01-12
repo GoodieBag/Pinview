@@ -1,4 +1,4 @@
-package com.goodiebag.example.pinview;
+package com.goodiebag.pinview.example;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

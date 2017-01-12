@@ -1,4 +1,4 @@
-package com.goodiebag.example.pinview;
+package com.goodiebag.pinview.example;
 
 import org.junit.Test;
 

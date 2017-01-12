@@ -11,6 +11,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -33,7 +34,13 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     private int mPinHeight = 50;
     private int mSplitWidth = 20;
     private int mInputType = TYPE_TEXT_VARIATION_NORMAL;
-    private @DrawableRes int mPinBackground=R.drawable.sample_background;
+    private boolean mCursorVisible = false;
+    private boolean mDelPressed = false;
+    private
+    @DrawableRes
+    int mPinBackground = R.drawable.sample_background;
+
+    OnClickListener mClickListener;
 
     View currentFocus = null;
     int currentTag;
@@ -71,6 +78,25 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         for (int i = 0; i < mPinLength; i++) {
             editTextList.add(i, new EditText(getContext()));
         }
+        super.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean focused = false;
+                for (EditText editText : editTextList) {
+                    if (editText.length() == 0) {
+                        editText.requestFocus();
+                        focused = true;
+                        break;
+                    }
+                }
+                if (!focused && editTextList.size() > 0) {
+                    editTextList.get(editTextList.size() - 1).requestFocus();
+                }
+                if (mClickListener != null) {
+                    mClickListener.onClick(Pinview.this);
+                }
+            }
+        });
     }
 
 
@@ -89,12 +115,13 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         if (attrs != null) {
             final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.Pinview, defStyleAttr, 0);
             //array.
-            mPinBackground = array.getResourceId(R.styleable.Pinview_pinBackground,mPinBackground);
+            mPinBackground = array.getResourceId(R.styleable.Pinview_pinBackground, mPinBackground);
             mPinLength = array.getInt(R.styleable.Pinview_pinLength, mPinLength);
             mPinHeight = (int) array.getDimension(R.styleable.Pinview_pinHeight, mPinHeight);
             mPinWidth = (int) array.getDimension(R.styleable.Pinview_pinWidth, mPinWidth);
             mSplitWidth = (int) array.getDimension(R.styleable.Pinview_splitWidth, mSplitWidth);
             mInputType = array.getInt(R.styleable.Pinview_android_inputType, mInputType);
+            mCursorVisible = array.getBoolean(R.styleable.Pinview_cursorVisible, mCursorVisible);
             array.recycle();
         }
     }
@@ -106,9 +133,23 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         styleEditText.setFilters(filters);
         styleEditText.setLayoutParams(params);
         styleEditText.setGravity(Gravity.CENTER);
+        styleEditText.setCursorVisible(mCursorVisible);
         //StateListDrawable Cannot be shared so clone it before its assigned to any other view.
         //Drawable clone = mPinBackground.mutate(); //.getConstantState().newDrawable();
+        if (!mCursorVisible) {
+            styleEditText.setClickable(false);
+            //styleEditText.setFocusableInTouchMode(false);
+            styleEditText.setHint("0");
+            styleEditText.setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    return false;
+                }
+            });
+        }
+
         styleEditText.setBackgroundResource(mPinBackground);
+        styleEditText.setPadding(0, 0, 0, 0);
         styleEditText.setTag(tag);
         styleEditText.setInputType(mInputType);
         styleEditText.addTextChangedListener(this);
@@ -117,21 +158,46 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         this.addView(styleEditText);
     }
 
-    private String getResultantString(){
+    private String getResultantString() {
         StringBuilder sb = new StringBuilder();
-        for(EditText et : editTextList){
-            if(sb.length() <= mPinLength)
+        for (EditText et : editTextList) {
+            if (sb.length() <= mPinLength)
                 sb.append(et.getText().toString());
         }
-        Log.d("answer" , sb.toString());
+        Log.d("answer", sb.toString());
         return sb.toString();
     }
 
     @Override
     public void onFocusChange(View view, boolean isFocused) {
-        if (isFocused)
-            currentFocus = view;
-        else{
+        if (isFocused) {
+            if (!mCursorVisible) {
+                if(mDelPressed){
+                    currentFocus=view;
+                    mDelPressed=false;
+                    return;
+                }
+                for (final EditText editText : editTextList) {
+                    if (editText.length() == 0) {
+                        if (editText != view) {
+                            editText.requestFocus();
+                        } else {
+                            currentFocus = view;
+                        }
+                        return;
+                    }
+                }
+                if (editTextList.get(editTextList.size() - 1) != view) {
+                    editTextList.get(editTextList.size() - 1).requestFocus();
+                } else {
+                    currentFocus = view;
+                }
+                return;
+            }
+            else{
+                currentFocus=view;
+            }
+        } else {
             view.clearFocus();
         }
         Log.d("focus", "" + view.getTag() + isFocused);
@@ -148,10 +214,10 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         if (charSequence.length() == 1 && currentFocus != null) {
             currentTag = Integer.parseInt(currentFocus.getTag().toString());
             if (currentTag < mPinLength - 1) {
-                editTextList.get(currentTag).clearFocus();
+                //editTextList.get(currentTag).clearFocus();
                 editTextList.get(currentTag + 1).requestFocus();
-            }
-            else {
+                Log.d("TChange", "" + currentTag);
+            } else {
                 //Last Pin box has been reached.
             }
         }
@@ -165,25 +231,24 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
 
     @Override
     public boolean onKey(View view, int i, KeyEvent keyEvent) {
-        if ((keyEvent.getAction() == KeyEvent.ACTION_DOWN) &&
-                (i == KeyEvent.KEYCODE_DEL)) {
+        if ((keyEvent.getAction() == KeyEvent.ACTION_UP) && (i == KeyEvent.KEYCODE_DEL)) {
             // Perform action on Del press
             currentTag = Integer.parseInt(currentFocus.getTag().toString());
-            if (currentTag > 0) {
+            if(editTextList.get(currentTag).length()>0) {
                 editTextList.get(currentTag).setText("");
-                editTextList.get(currentTag).clearFocus();
-                editTextList.get(currentTag - 1).requestFocus();
-            } else {
-                //currentTag has reached zero
-                editTextList.get(currentTag).setText("");
+                return true;
             }
 
+            if (currentTag > 0) {
+                mDelPressed = true;
+                editTextList.get(currentTag - 1).requestFocus();
+            }
             return true;
         }
         return false;
     }
 
-    private void refresh(){
+    private void refresh() {
         removeAllViews();
         styleEditText();
         invalidate();
@@ -234,12 +299,19 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         refresh();
     }
 
-    public @DrawableRes int getPinBackground() {
+    public
+    @DrawableRes
+    int getPinBackground() {
         return mPinBackground;
     }
 
     public void setPinBackgroundRes(@DrawableRes int res) {
         this.mPinBackground = res;
         refresh();
+    }
+
+    @Override
+    public void setOnClickListener(OnClickListener l) {
+        mClickListener = l;
     }
 }
