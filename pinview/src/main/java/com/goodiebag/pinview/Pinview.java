@@ -2,10 +2,11 @@ package com.goodiebag.pinview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -15,11 +16,16 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.text.InputType.TYPE_CLASS_NUMBER;
+import static android.text.InputType.TYPE_CLASS_TEXT;
 import static android.text.InputType.TYPE_TEXT_VARIATION_NORMAL;
+import static android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD;
+
 
 /**
  * Created by pavan on 11/01/17.
@@ -27,18 +33,25 @@ import static android.text.InputType.TYPE_TEXT_VARIATION_NORMAL;
 
 public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusChangeListener, View.OnKeyListener {
     private final float DENSITY = getContext().getResources().getDisplayMetrics().density;
-    //Potential attributes
+    //attributes
     private int mPinLength = 4;
     private List<EditText> editTextList = new ArrayList<>();
     private int mPinWidth = 50;
     private int mPinHeight = 50;
     private int mSplitWidth = 20;
-    private int mInputType = TYPE_TEXT_VARIATION_NORMAL;
     private boolean mCursorVisible = false;
     private boolean mDelPressed = false;
-    private
     @DrawableRes
-    int mPinBackground = R.drawable.sample_background;
+    private int mPinBackground = R.drawable.sample_background;
+    private boolean mPassword = false;
+    private String mHint = "";
+    private InputType inputType = InputType.TEXT;
+
+
+
+    private enum InputType {
+        TEXT, NUMBER
+    }
 
     OnClickListener mClickListener;
 
@@ -120,8 +133,11 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             mPinHeight = (int) array.getDimension(R.styleable.Pinview_pinHeight, mPinHeight);
             mPinWidth = (int) array.getDimension(R.styleable.Pinview_pinWidth, mPinWidth);
             mSplitWidth = (int) array.getDimension(R.styleable.Pinview_splitWidth, mSplitWidth);
-            mInputType = array.getInt(R.styleable.Pinview_android_inputType, mInputType);
             mCursorVisible = array.getBoolean(R.styleable.Pinview_cursorVisible, mCursorVisible);
+            mPassword = array.getBoolean(R.styleable.Pinview_password, mPassword);
+            mHint = array.getString(R.styleable.Pinview_hint);
+            InputType[] its = InputType.values();
+            inputType = its[array.getInt(R.styleable.Pinview_inputType, 0)];
             array.recycle();
         }
     }
@@ -139,7 +155,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         if (!mCursorVisible) {
             styleEditText.setClickable(false);
             //styleEditText.setFocusableInTouchMode(false);
-            styleEditText.setHint("0");
+            styleEditText.setHint(mHint);
             styleEditText.setOnTouchListener(new OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -147,34 +163,53 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
                 }
             });
         }
-
         styleEditText.setBackgroundResource(mPinBackground);
         styleEditText.setPadding(0, 0, 0, 0);
         styleEditText.setTag(tag);
-        styleEditText.setInputType(mInputType);
+        int it;
+        switch (inputType) {
+            case NUMBER:
+                it = TYPE_CLASS_NUMBER;
+                break;
+            case TEXT:
+                it = TYPE_CLASS_TEXT;
+                break;
+            default:
+                it = TYPE_CLASS_TEXT;
+        }
+        styleEditText.setInputType(mPassword ? it | TYPE_TEXT_VARIATION_PASSWORD : it);
         styleEditText.addTextChangedListener(this);
         styleEditText.setOnFocusChangeListener(this);
         styleEditText.setOnKeyListener(this);
         this.addView(styleEditText);
     }
 
-    private String getResultantString() {
+    private String getValue() {
         StringBuilder sb = new StringBuilder();
         for (EditText et : editTextList) {
             if (sb.length() <= mPinLength)
                 sb.append(et.getText().toString());
         }
-        Log.d("answer", sb.toString());
         return sb.toString();
+    }
+
+    public void setValue(@NonNull String value) {
+        for (int i = 0; i < editTextList.size(); i++) {
+            if (value.length() > i) {
+                editTextList.get(i).setText(((Character) value.charAt(i)).toString());
+            } else {
+                editTextList.get(i).setText("");
+            }
+        }
     }
 
     @Override
     public void onFocusChange(View view, boolean isFocused) {
         if (isFocused) {
             if (!mCursorVisible) {
-                if(mDelPressed){
-                    currentFocus=view;
-                    mDelPressed=false;
+                if (mDelPressed) {
+                    currentFocus = view;
+                    mDelPressed = false;
                     return;
                 }
                 for (final EditText editText : editTextList) {
@@ -193,14 +228,12 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
                     currentFocus = view;
                 }
                 return;
-            }
-            else{
-                currentFocus=view;
+            } else {
+                currentFocus = view;
             }
         } else {
             view.clearFocus();
         }
-        Log.d("focus", "" + view.getTag() + isFocused);
     }
 
     @Override
@@ -210,18 +243,25 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
 
     @Override
     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        getResultantString();
         if (charSequence.length() == 1 && currentFocus != null) {
             currentTag = Integer.parseInt(currentFocus.getTag().toString());
             if (currentTag < mPinLength - 1) {
                 //editTextList.get(currentTag).clearFocus();
-                editTextList.get(currentTag + 1).requestFocus();
-                Log.d("TChange", "" + currentTag);
+                long delay = 1;
+                if (mPassword)
+                    delay = 50;
+                this.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        editTextList.get(currentTag + 1).requestFocus();
+                    }
+                }, delay);
             } else {
                 //Last Pin box has been reached.
             }
+
         }
-        Log.d("Focus", "Tag" + currentTag);
+        Log.d("Char" , charSequence.toString());
     }
 
     @Override
@@ -231,14 +271,15 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
 
     @Override
     public boolean onKey(View view, int i, KeyEvent keyEvent) {
-        if ((keyEvent.getAction() == KeyEvent.ACTION_UP) && (i == KeyEvent.KEYCODE_DEL)) {
+        if ((keyEvent.getAction() == KeyEvent.ACTION_DOWN) && (i == KeyEvent.KEYCODE_DEL)) {
             // Perform action on Del press
+            //Double backspace to delete character
+            //Number pad bugged . Delete the last tile and u cannot enter more texts, but works when u go back to further tiles.
             currentTag = Integer.parseInt(currentFocus.getTag().toString());
-            if(editTextList.get(currentTag).length()>0) {
+            if (editTextList.get(currentTag).length() > 0) {
                 editTextList.get(currentTag).setText("");
                 return true;
             }
-
             if (currentTag > 0) {
                 mDelPressed = true;
                 editTextList.get(currentTag - 1).requestFocus();
@@ -290,12 +331,20 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         refresh();
     }
 
-    public int getInputType() {
-        return mInputType;
+    public boolean isPassword() {
+        return mPassword;
     }
 
-    public void setInputType(int inputType) {
-        this.mInputType = inputType;
+    public void setPassword(boolean password) {
+        this.mPassword = password;
+    }
+
+    public String getmHint() {
+        return mHint;
+    }
+
+    public void setmHint(String mHint) {
+        this.mHint = mHint;
         refresh();
     }
 

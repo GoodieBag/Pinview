@@ -6,11 +6,13 @@ import android.util.Log;
 import com.goodiebag.pinview.Pinview;
 
 public class MainActivity extends AppCompatActivity {
-    private Pinview pinview;
+    private Pinview pinview1, pinview2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        pinview = (Pinview) findViewById(R.id.pinview);
+        //pinview1 = (Pinview) findViewById(R.id.pinview1);
+        //pinview2 = (Pinview) findViewById(R.id.pinview2);
+
     }
 }

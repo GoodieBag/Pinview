@@ -13,7 +13,7 @@
     android:paddingTop="@dimen/activity_vertical_margin">
 
     <com.goodiebag.pinview.Pinview
-        android:id="@+id/pinview"
+        android:id="@+id/pinview1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cursorVisible="false"
@@ -21,12 +21,57 @@
         app:pinBackground="@drawable/example_drawable"
         app:pinWidth="40dp"
         app:pinHeight="40dp"
+        app:password="false"
         android:background="#CCC"
-        android:inputType="textPassword"
-         />
-    <EditText
+        app:inputType="number"
+        app:hint="0"
+        />
+
+    <com.goodiebag.pinview.Pinview
+        android:id="@+id/pinview2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFF"/>
+        app:cursorVisible="false"
+        app:pinLength="4"
+        app:pinBackground="@drawable/example_drawable"
+        app:pinWidth="40dp"
+        app:pinHeight="40dp"
+        app:password="true"
+        android:background="#CCC"
+        app:inputType="number"
+        android:visibility="gone"
+        app:hint="HE"
+        />
+
+    <com.goodiebag.pinview.Pinview
+        android:id="@+id/pinview3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cursorVisible="false"
+        app:pinLength="4"
+        app:pinBackground="@drawable/example_drawable"
+        app:pinWidth="40dp"
+        app:pinHeight="40dp"
+        app:password="false"
+        android:background="#CCC"
+        app:inputType="text"
+        app:hint="0"
+        />
+
+    <com.goodiebag.pinview.Pinview
+        android:id="@+id/pinview4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cursorVisible="false"
+        app:pinLength="4"
+        app:pinBackground="@drawable/example_drawable"
+        app:pinWidth="40dp"
+        app:pinHeight="40dp"
+        app:password="true"
+        android:background="#CCC"
+        app:inputType="text"
+        android:visibility="gone"
+        app:hint="HE"
+        />
 
 </LinearLayout>

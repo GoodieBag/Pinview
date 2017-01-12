@@ -9,6 +9,10 @@
         <attr name="cursorVisible" format="boolean"/>
         <attr name="password" format="boolean"/>
         <attr name="hint" format="string"/>
-        <attr name="android:inputType"/>
+        <attr name="inputType"/>
     </declare-styleable>
+    <attr name="inputType" format="enum">
+        <enum name="text" value="0"/>
+        <enum name="number" value="1"/>
+    </attr>
 </resources>
