@@ -13,13 +13,11 @@
     android:paddingTop="@dimen/activity_vertical_margin">
 
     <com.goodiebag.pinview.Pinview
+        android:id="@+id/pinview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:pinBackground="@drawable/example_drawable"
         android:inputType="text"
-        app:pinHeight="40dp"
-        app:pinWidth="40dp"
-        app:pinLength="6"
-        app:splitWidth="10dp" />
+         />
 
 </LinearLayout>

@@ -32,9 +32,8 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     private int mPinHeight = 50;
     private int mSplitWidth = 20;
     private int mInputType = TYPE_TEXT_VARIATION_NORMAL;
-
-
     private Drawable mPinBackground;
+
     View currentFocus = null;
     int currentTag;
 
@@ -64,6 +63,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         mPinHeight *= DENSITY;
         mPinWidth *= DENSITY;
         mSplitWidth *= DENSITY;
+        setWillNotDraw(false);
         initAttributes(context, attrs, defStyleAttr);
         params = new LayoutParams(mPinWidth, mPinHeight);
         setOrientation(HORIZONTAL);
@@ -181,5 +181,63 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             return true;
         }
         return false;
+    }
+
+    private void refresh(){
+        invalidate();
+    }
+
+    public int getSplitWidth() {
+        return mSplitWidth;
+    }
+
+    public void setSplitWidth(int splitWidth) {
+        this.mSplitWidth = splitWidth;
+        refresh();
+    }
+
+    public int getPinHeight() {
+        return mPinHeight;
+    }
+
+    public void setPinHeight(int pinHeight) {
+        this.mPinHeight = pinHeight;
+        refresh();
+    }
+
+    public int getPinWidth() {
+        return mPinWidth;
+    }
+
+    public void setPinWidth(int pinWidth) {
+        this.mPinWidth = pinWidth;
+        refresh();
+    }
+
+    public int getPinLength() {
+        return mPinLength;
+    }
+
+    public void setPinLength(int pinLength) {
+        this.mPinLength = pinLength;
+        refresh();
+    }
+
+    public int getInputType() {
+        return mInputType;
+    }
+
+    public void setInputType(int inputType) {
+        this.mInputType = inputType;
+        refresh();
+    }
+
+    public Drawable getPinBackground() {
+        return mPinBackground;
+    }
+
+    public void setPinBackground(Drawable pinBackground) {
+        this.mPinBackground = pinBackground;
+        refresh();
     }
 }
