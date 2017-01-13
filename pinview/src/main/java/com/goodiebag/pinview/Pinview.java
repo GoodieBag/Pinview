@@ -178,10 +178,10 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             default:
                 it = TYPE_CLASS_TEXT;
         }
-        if(mPassword){
-            if(inputType == InputType.NUMBER){
-                it = TYPE_CLASS_NUMBER| TYPE_NUMBER_VARIATION_PASSWORD;
-            }else if(inputType == InputType.TEXT){
+        if (mPassword) {
+            if (inputType == InputType.NUMBER) {
+                it = TYPE_CLASS_NUMBER | TYPE_NUMBER_VARIATION_PASSWORD;
+            } else if (inputType == InputType.TEXT) {
                 it = TYPE_CLASS_TEXT | TYPE_TEXT_VARIATION_PASSWORD;
             }
         }
@@ -204,7 +204,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
 
     public void setValue(@NonNull String value) {
         for (int i = 0; i < editTextList.size(); i++) {
-            if(inputType == InputType.TEXT) {
+            if (inputType == InputType.TEXT) {
                 if (value.length() > i) {
                     editTextList.get(i).setText(((Character) value.charAt(i)).toString());
                 } else {
@@ -216,8 +216,8 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
 
     @Override
     public void onFocusChange(View view, boolean isFocused) {
-        if (isFocused) {
-            Log.d("here","here");
+        if (isFocused && !mCursorVisible) {
+            Log.d("here", "here");
             if (!mCursorVisible) {
                 if (mDelPressed) {
                     currentFocus = view;
@@ -243,6 +243,8 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             } else {
                 currentFocus = view;
             }
+        } else if (isFocused && mCursorVisible) {
+            currentFocus = view;
         } else {
             view.clearFocus();
         }
@@ -255,6 +257,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
 
     @Override
     public void onTextChanged(CharSequence charSequence, int i, int i1, int count) {
+
         if (charSequence.length() == 1 && currentFocus != null) {
             currentTag = Integer.parseInt(currentFocus.getTag().toString());
             if (currentTag < mPinLength - 1) {
@@ -271,19 +274,20 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             } else {
                 //Last Pin box has been reached.
             }
-            if(currentTag == mPinLength -1 && inputType == InputType.NUMBER || currentTag == mPinLength -1 && mPassword){
+            if (currentTag == mPinLength - 1 && inputType == InputType.NUMBER || currentTag == mPinLength - 1 && mPassword) {
                 finalNumberPin = true;
             }
 
         } else if (charSequence.length() == 0) {
             Log.d("Count", count + "");
             currentTag = Integer.parseInt(currentFocus.getTag().toString());
-                mDelPressed = true;
+            mDelPressed = true;
             //For the last cell of the non password text fields. Clear the text without changing the focus.
-                if (editTextList.get(currentTag).getText().length() > 0)
-                    editTextList.get(currentTag).setText("");
-                //editTextList.get(currentTag - 1).requestFocus();
-            }
+            if (editTextList.get(currentTag).getText().length() > 0)
+                editTextList.get(currentTag).setText("");
+            //editTextList.get(currentTag - 1).requestFocus();
+        }
+
 
         Log.d("Count", count + "");
     }
@@ -295,12 +299,13 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
 
     @Override
     public boolean onKey(View view, int i, KeyEvent keyEvent) {
+
         if ((keyEvent.getAction() == KeyEvent.ACTION_UP) && (i == KeyEvent.KEYCODE_DEL)) {
             // Perform action on Del press
             currentTag = Integer.parseInt(currentFocus.getTag().toString());
             //Last tile of the number pad. Clear the edit text without changing the focus.
             if (inputType == InputType.NUMBER && currentTag == mPinLength - 1 && finalNumberPin ||
-                    (mPassword && currentTag == mPinLength - 1 && finalNumberPin)){
+                    (mPassword && currentTag == mPinLength - 1 && finalNumberPin)) {
                 if (editTextList.get(currentTag).length() > 0) {
                     editTextList.get(currentTag).setText("");
                 }
