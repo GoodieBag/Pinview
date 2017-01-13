@@ -193,7 +193,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         this.addView(styleEditText);
     }
 
-    private String getValue() {
+    public String getValue() {
         StringBuilder sb = new StringBuilder();
         for (EditText et : editTextList) {
             if (sb.length() <= mPinLength)
@@ -221,7 +221,6 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     @Override
     public void onFocusChange(View view, boolean isFocused) {
         if (isFocused && !mCursorVisible) {
-            Log.d("here", "here");
             if (!mCursorVisible) {
                 if (mDelPressed) {
                     currentFocus = view;
@@ -283,7 +282,6 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             }
 
         } else if (charSequence.length() == 0) {
-            Log.d("Count", count + "");
             currentTag = Integer.parseInt(currentFocus.getTag().toString());
             mDelPressed = true;
             //For the last cell of the non password text fields. Clear the text without changing the focus.
@@ -291,9 +289,6 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
                 editTextList.get(currentTag).setText("");
             //editTextList.get(currentTag - 1).requestFocus();
         }
-
-
-        Log.d("Count", count + "");
     }
 
     @Override
@@ -330,8 +325,6 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
                 if (editTextList.get(currentTag).getText().length() > 0)
                     editTextList.get(currentTag).setText("");
             }
-
-            Log.d("Count", "key");
             return true;
 
         }
@@ -389,11 +382,11 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         this.mPassword = password;
     }
 
-    public String getmHint() {
+    public String getHint() {
         return mHint;
     }
 
-    public void setmHint(String mHint) {
+    public void setHint(String mHint) {
         this.mHint = mHint;
         refresh();
     }
