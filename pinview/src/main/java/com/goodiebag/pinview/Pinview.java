@@ -48,7 +48,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     private boolean finalNumberPin = false;
 
 
-    private enum InputType {
+    public enum InputType {
         TEXT, NUMBER
     }
 
@@ -203,6 +203,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     }
 
     public void setValue(@NonNull String value) {
+        String regex = "[0-9]+";
         for (int i = 0; i < editTextList.size(); i++) {
             if (inputType == InputType.TEXT) {
                 if (value.length() > i) {
@@ -210,6 +211,9 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
                 } else {
                     editTextList.get(i).setText("");
                 }
+            }else if(inputType == InputType.NUMBER){
+                if(value.matches(regex))
+                    editTextList.get(i).setText(((Character) value.charAt(i)).toString());
             }
         }
     }
@@ -408,5 +412,14 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     @Override
     public void setOnClickListener(OnClickListener l) {
         mClickListener = l;
+    }
+
+    public InputType getInputType() {
+        return inputType;
+    }
+
+    public void setInputType(InputType inputType) {
+        this.inputType = inputType;
+        refresh();
     }
 }

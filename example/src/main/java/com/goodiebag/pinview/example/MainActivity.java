@@ -11,8 +11,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //pinview1 = (Pinview) findViewById(R.id.pinview1);
-        //pinview2 = (Pinview) findViewById(R.id.pinview2);
+        pinview1 = (Pinview) findViewById(R.id.pinview1);
 
     }
 }
