@@ -158,6 +158,8 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             styleEditText.setOnTouchListener(new OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
+                    // When back space is pressed it goes to delete mode and when u click on an edit Text it should get out of the delete mode
+                    mDelPressed = false;
                     return false;
                 }
             });
@@ -215,6 +217,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     @Override
     public void onFocusChange(View view, boolean isFocused) {
         if (isFocused) {
+            Log.d("here","here");
             if (!mCursorVisible) {
                 if (mDelPressed) {
                     currentFocus = view;
@@ -276,6 +279,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             Log.d("Count", count + "");
             currentTag = Integer.parseInt(currentFocus.getTag().toString());
                 mDelPressed = true;
+            //For the last cell of the non password text fields. Clear the text without changing the focus.
                 if (editTextList.get(currentTag).getText().length() > 0)
                     editTextList.get(currentTag).setText("");
                 //editTextList.get(currentTag - 1).requestFocus();
@@ -294,6 +298,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         if ((keyEvent.getAction() == KeyEvent.ACTION_UP) && (i == KeyEvent.KEYCODE_DEL)) {
             // Perform action on Del press
             currentTag = Integer.parseInt(currentFocus.getTag().toString());
+            //Last tile of the number pad. Clear the edit text without changing the focus.
             if (inputType == InputType.NUMBER && currentTag == mPinLength - 1 && finalNumberPin ||
                     (mPassword && currentTag == mPinLength - 1 && finalNumberPin)){
                 if (editTextList.get(currentTag).length() > 0) {
@@ -303,12 +308,16 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             } else if (currentTag > 0) {
                 mDelPressed = true;
                 if (editTextList.get(currentTag).length() == 0) {
+                    //Takes it back one tile
                     editTextList.get(currentTag - 1).requestFocus();
+                    //Clears the tile it just got to
                     editTextList.get(currentTag).setText("");
                 } else {
+                    //If it has some content clear it first
                     editTextList.get(currentTag).setText("");
                 }
             } else {
+                //For the first cell
                 if (editTextList.get(currentTag).getText().length() > 0)
                     editTextList.get(currentTag).setText("");
             }
