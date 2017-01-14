@@ -1,7 +1,8 @@
 # Pinview
 
  Pinview library for android :pouting_cat:
-
+ 
+![alt tag](https://media.giphy.com/media/U5BP5gk9zQaqs/giphy.gif)       ![alt_tag](https://media.giphy.com/media/CnCvLh9NT6Hio/giphy.gif)
 
 ## Gradle Dependency
 
