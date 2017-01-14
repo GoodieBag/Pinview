@@ -46,10 +46,16 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     private String mHint = "";
     private InputType inputType = InputType.TEXT;
     private boolean finalNumberPin = false;
+    private PinViewEventListener mListener;
+    private boolean fromSetValue = false;
 
 
     public enum InputType {
         TEXT, NUMBER
+    }
+
+    public interface PinViewEventListener {
+        void onDataEntered(Pinview pinview, boolean fromUser);
     }
 
     OnClickListener mClickListener;
@@ -155,6 +161,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             styleEditText.setClickable(false);
             //styleEditText.setFocusableInTouchMode(false);
             styleEditText.setHint(mHint);
+
             styleEditText.setOnTouchListener(new OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -196,26 +203,40 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     public String getValue() {
         StringBuilder sb = new StringBuilder();
         for (EditText et : editTextList) {
-            if (sb.length() <= mPinLength)
-                sb.append(et.getText().toString());
+            sb.append(et.getText().toString());
         }
         return sb.toString();
     }
 
     public void setValue(@NonNull String value) {
         String regex = "[0-9]+";
+        fromSetValue = true;
+        if (inputType == InputType.NUMBER && !value.matches(regex))
+            return;
+        int lastTagHavingValue = -1;
         for (int i = 0; i < editTextList.size(); i++) {
-            if (inputType == InputType.TEXT) {
-                if (value.length() > i) {
-                    editTextList.get(i).setText(((Character) value.charAt(i)).toString());
-                } else {
-                    editTextList.get(i).setText("");
-                }
-            }else if(inputType == InputType.NUMBER){
-                if(value.matches(regex))
-                    editTextList.get(i).setText(((Character) value.charAt(i)).toString());
+            if (value.length() > i) {
+                lastTagHavingValue = i;
+                editTextList.get(i).setText(((Character) value.charAt(i)).toString());
+            } else {
+                editTextList.get(i).setText("");
             }
         }
+        if (mPinLength > 0) {
+            if (lastTagHavingValue < mPinLength - 1) {
+                currentFocus = editTextList.get(lastTagHavingValue + 1);
+                currentTag = lastTagHavingValue + 1;
+            } else {
+                currentFocus = editTextList.get(mPinLength - 1);
+                currentTag = mPinLength - 1;
+                if (inputType == InputType.NUMBER || mPassword)
+                    finalNumberPin = true;
+                if (mListener != null)
+                    mListener.onDataEntered(this, false);
+            }
+            currentFocus.requestFocus();
+        }
+        fromSetValue = false;
     }
 
     @Override
@@ -288,6 +309,13 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             if (editTextList.get(currentTag).getText().length() > 0)
                 editTextList.get(currentTag).setText("");
             //editTextList.get(currentTag - 1).requestFocus();
+        }
+
+        for (int index = 0; index < mPinLength; index++) {
+            if (editTextList.get(index).getText().length() < 1)
+                break;
+            if (!fromSetValue && i + 1 == mPinLength && mListener != null)
+                mListener.onDataEntered(this, true);
         }
     }
 
@@ -414,5 +442,9 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     public void setInputType(InputType inputType) {
         this.inputType = inputType;
         refresh();
+    }
+
+    public void setPinViewEventListener(PinViewEventListener listener) {
+        this.mListener = listener;
     }
 }
