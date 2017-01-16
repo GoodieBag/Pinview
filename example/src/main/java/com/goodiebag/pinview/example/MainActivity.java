@@ -28,13 +28,18 @@ public class MainActivity extends AppCompatActivity {
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                 int random = ThreadLocalRandom.current().nextInt(50, 60);
-                random*=getResources().getDisplayMetrics().density;
-                Log.d("random", "" + random);
-                pinview1.setPinWidth(random);
-                pinview2.setPinWidth(random);
-                pinview3.setPinWidth(random);
-                pinview4.setPinWidth(random);
+//                 int random = ThreadLocalRandom.current().nextInt(50, 60);
+//                random*=getResources().getDisplayMetrics().density;
+//                Log.d("random", "" + random);
+//                pinview1.setPinWidth(random);
+//                pinview2.setPinWidth(random);
+//                pinview3.setPinWidth(random);
+//                pinview4.setPinWidth(random);
+
+                pinview1.setPassword(!pinview1.isPassword());
+                pinview2.setPassword(!pinview2.isPassword());
+                pinview3.setPassword(!pinview3.isPassword());
+                pinview4.setPassword(!pinview4.isPassword());
             }
         });
     }
