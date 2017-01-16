@@ -36,7 +36,8 @@ public class MainActivity extends AppCompatActivity {
 //                pinview3.setPinWidth(random);
 //                pinview4.setPinWidth(random);
 
-                pinview1.setPassword(!pinview1.isPassword());
+                pinview1.setPinBackgroundRes(R.drawable.sample_background);
+                pinview1.setInputType(Pinview.InputType.TEXT);
                 pinview2.setPassword(!pinview2.isPassword());
                 pinview3.setPassword(!pinview3.isPassword());
                 pinview4.setPassword(!pinview4.isPassword());

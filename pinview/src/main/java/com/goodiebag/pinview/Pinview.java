@@ -7,16 +7,13 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.InputFilter;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.TransformationMethod;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -445,6 +442,8 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
 
     public void setPinBackgroundRes(@DrawableRes int res) {
         this.mPinBackground = res;
+        for (EditText editText : editTextList)
+            editText.setBackgroundResource(res);
     }
 
     @Override
@@ -458,7 +457,27 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
 
     public void setInputType(InputType inputType) {
         this.inputType = inputType;
-
+        int it;
+        for (EditText editText : editTextList){
+            switch (inputType) {
+                case NUMBER:
+                    it = TYPE_CLASS_NUMBER;
+                    break;
+                case TEXT:
+                    it = TYPE_CLASS_TEXT;
+                    break;
+                default:
+                    it = TYPE_CLASS_TEXT;
+            }
+            if (mPassword) {
+                if (inputType == InputType.NUMBER) {
+                    it = TYPE_CLASS_NUMBER | TYPE_NUMBER_VARIATION_PASSWORD;
+                } else if (inputType == InputType.TEXT) {
+                    it = TYPE_CLASS_TEXT | TYPE_TEXT_VARIATION_PASSWORD;
+                }
+            }
+            editText.setInputType(it);
+        }
     }
 
     public void setPinViewEventListener(PinViewEventListener listener) {
