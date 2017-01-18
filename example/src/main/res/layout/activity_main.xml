@@ -11,17 +11,14 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin">
 
-    <Button
-        android:id="@+id/btn"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="set"/>
-
+        android:text="Number"/>
     <com.goodiebag.pinview.Pinview
         android:id="@+id/pinview1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#CCC"
         app:cursorVisible="false"
         app:hint="0"
         app:inputType="number"
@@ -31,12 +28,14 @@
         app:pinLength="4"
         app:pinWidth="40dp" />
 
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Text"/>
     <com.goodiebag.pinview.Pinview
         android:id="@+id/pinview2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#CCC"
         app:cursorVisible="false"
         app:hint="0"
         app:inputType="text"
@@ -46,29 +45,35 @@
         app:pinLength="4"
         app:pinWidth="40dp" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Number-Password"/>
     <com.goodiebag.pinview.Pinview
         android:id="@+id/pinview3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#CCC"
         app:cursorVisible="false"
         app:hint="0"
-        app:inputType="text"
-        app:password="false"
+        app:inputType="number"
+        app:password="true"
         app:pinBackground="@drawable/example_drawable"
         app:pinHeight="40dp"
         app:pinLength="4"
         app:pinWidth="40dp" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Text-Password"/>
     <com.goodiebag.pinview.Pinview
         android:id="@+id/pinview4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#CCC"
         app:cursorVisible="false"
         app:hint="0"
-        app:inputType="number"
-        app:password="false"
+        app:inputType="text"
+        app:password="true"
         app:pinBackground="@drawable/example_drawable"
         app:pinHeight="40dp"
         app:pinLength="4"

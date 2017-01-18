@@ -78,10 +78,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     public Pinview(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setGravity(Gravity.CENTER);
-        //init fields and attributes
         init(context, attrs, defStyleAttr);
-        //style and draw it
-        //styleEditText();
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -131,7 +128,6 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     private void initAttributes(Context context, AttributeSet attrs, int defStyleAttr) {
         if (attrs != null) {
             final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.Pinview, defStyleAttr, 0);
-            //array.
             mPinBackground = array.getResourceId(R.styleable.Pinview_pinBackground, mPinBackground);
             mPinLength = array.getInt(R.styleable.Pinview_pinLength, mPinLength);
             mPinHeight = (int) array.getDimension(R.styleable.Pinview_pinHeight, mPinHeight);
@@ -182,18 +178,17 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             default:
                 it = TYPE_CLASS_TEXT;
         }
-        if (mPassword) {
-            if (inputType == InputType.NUMBER) {
-                it = TYPE_CLASS_NUMBER | TYPE_NUMBER_VARIATION_PASSWORD;
-            } else if (inputType == InputType.TEXT) {
-                it = TYPE_CLASS_TEXT | TYPE_TEXT_VARIATION_PASSWORD;
-            }
-        }
+//        if (mPassword) {
+//            if (inputType == InputType.NUMBER) {
+//                it = TYPE_CLASS_NUMBER | TYPE_NUMBER_VARIATION_PASSWORD;
+//            } else if (inputType == InputType.TEXT) {
+//                it = TYPE_CLASS_TEXT | TYPE_TEXT_VARIATION_PASSWORD;
+//            }
+//        }
         styleEditText.setInputType(it);
         styleEditText.addTextChangedListener(this);
         styleEditText.setOnFocusChangeListener(this);
         styleEditText.setOnKeyListener(this);
-        //this.addView(styleEditText);
     }
 
     public String getValue() {
