@@ -14,6 +14,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -61,7 +62,6 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     OnClickListener mClickListener;
 
     View currentFocus = null;
-    //int currentTag;
 
     InputFilter filters[] = new InputFilter[1];
     LinearLayout.LayoutParams params;
@@ -98,6 +98,8 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
                 for (EditText editText : editTextList) {
                     if (editText.length() == 0) {
                         editText.requestFocus();
+                        InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
                         focused = true;
                         break;
                     }
@@ -110,6 +112,15 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
                 }
             }
         });
+        //bring up the keyboard
+        if(editTextList.get(0) != null)
+            editTextList.get(0).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
+                }
+            },200);
     }
 
     private void createEditTexts() {
@@ -178,13 +189,6 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             default:
                 it = TYPE_CLASS_TEXT;
         }
-//        if (mPassword) {
-//            if (inputType == InputType.NUMBER) {
-//                it = TYPE_CLASS_NUMBER | TYPE_NUMBER_VARIATION_PASSWORD;
-//            } else if (inputType == InputType.TEXT) {
-//                it = TYPE_CLASS_TEXT | TYPE_TEXT_VARIATION_PASSWORD;
-//            }
-//        }
         styleEditText.setInputType(it);
         styleEditText.addTextChangedListener(this);
         styleEditText.setOnFocusChangeListener(this);
