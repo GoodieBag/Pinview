@@ -280,7 +280,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     }
 
     @Override
-    public void onTextChanged(CharSequence charSequence, int i, int i1, int count) {
+    public void onTextChanged(CharSequence charSequence, int start, int i1, int count) {
 
         if (charSequence.length() == 1 && currentFocus != null) {
             final int currentTag = getIndexOfCurrentFocus();
@@ -312,7 +312,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         for (int index = 0; index < mPinLength; index++) {
             if (editTextList.get(index).getText().length() < 1)
                 break;
-            if (!fromSetValue && i + 1 == mPinLength && mListener != null)
+            if (!fromSetValue && index + 1 == mPinLength && mListener != null)
                 mListener.onDataEntered(this, true);
         }
     }
