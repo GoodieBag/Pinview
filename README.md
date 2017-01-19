@@ -18,11 +18,17 @@ allprojects {
 Add the dependency : 
 ```java
 dependencies {
-	   compile 'com.github.GoodieBag:Pinview:v1.0'
+	   compile 'com.github.GoodieBag:Pinview:v1.2'
 	}
 ```
 Sync the gradle and that's it! :+1:
 
+### Features : 
+ * Flawless focus change to the consecutive pin box when the text is entered/deleted.
+ * When the user taps on the Pinview, the first empty box available is focused automatically (when the cursor is hidden).
+ * Listeners for onDataEntered ( To call can API when the pin is entered) and touch exists.
+ * Customisations are available for pin box sizes, background(drawables, selectors), inputType etc.
+ 
 ## Usage
 
 ### XML : 
@@ -71,6 +77,18 @@ myLayout.addView(pin);
 ```
 ##### To get and set the pin values use the ```pin.getValue()``` and ```pin.setValue()``` methods respectively.
 
+There is an event listener which is triggered when the user is done entering the otp which can be used as follows : 
+```java
+pinview.setPinViewEventListener(new Pinview.PinViewEventListener() {
+            @Override
+            public void onDataEntered(Pinview pinview, boolean fromUser) {
+	    	//Make api calls here or what not
+                Toast.makeText(MainActivity.this, pinview.getValue(), Toast.LENGTH_SHORT).show();
+            }
+        });
+```
+
+
 ## LICENSE
 ```
 MIT License
@@ -95,3 +113,5 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+
