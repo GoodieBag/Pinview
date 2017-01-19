@@ -22,6 +22,7 @@
         app:cursorVisible="false"
         app:hint="0"
         app:inputType="number"
+        app:forceKeyboard="true"
         app:password="false"
         app:pinBackground="@drawable/example_drawable"
         app:pinHeight="40dp"

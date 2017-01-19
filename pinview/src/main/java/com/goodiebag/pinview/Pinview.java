@@ -49,6 +49,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     private boolean finalNumberPin = false;
     private PinViewEventListener mListener;
     private boolean fromSetValue = false;
+    private boolean mForceKeyboard = false;
 
 
     public enum InputType {
@@ -113,7 +114,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             }
         });
         //bring up the keyboard
-        if(editTextList.get(0) != null)
+        if(editTextList.get(0) != null && mForceKeyboard)
             editTextList.get(0).postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -146,6 +147,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             mSplitWidth = (int) array.getDimension(R.styleable.Pinview_splitWidth, mSplitWidth);
             mCursorVisible = array.getBoolean(R.styleable.Pinview_cursorVisible, mCursorVisible);
             mPassword = array.getBoolean(R.styleable.Pinview_password, mPassword);
+            mForceKeyboard = array.getBoolean(R.styleable.Pinview_forceKeyboard, mForceKeyboard);
             mHint = array.getString(R.styleable.Pinview_hint);
             InputType[] its = InputType.values();
             inputType = its[array.getInt(R.styleable.Pinview_inputType, 0)];

@@ -8,6 +8,7 @@
         <attr name="splitWidth" format="dimension"/>
         <attr name="cursorVisible" format="boolean"/>
         <attr name="password" format="boolean"/>
+        <attr name="forceKeyboard" format ="boolean"/>
         <attr name="hint" format="string"/>
         <attr name="inputType"/>
     </declare-styleable>
