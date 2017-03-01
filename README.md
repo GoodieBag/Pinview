@@ -1,5 +1,8 @@
 # Pinview
 
+[![Release](https://jitpack.io/v/GoodieBag/HorizontalPicker.svg)](https://jitpack.io/#GoodieBag/Pinview)
+[![API](https://img.shields.io/badge/API-15%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=15)
+
  Pinview library for android :pouting_cat:
  
 ![alt tag](https://media.giphy.com/media/U5BP5gk9zQaqs/giphy.gif)       ![alt_tag](https://media.giphy.com/media/CnCvLh9NT6Hio/giphy.gif)
@@ -18,7 +21,7 @@ allprojects {
 Add the dependency : 
 ```java
 dependencies {
-	   compile 'com.github.GoodieBag:Pinview:v1.2'
+	   compile 'com.github.GoodieBag:Pinview:v1.3'
 	}
 ```
 Sync the gradle and that's it! :+1:
@@ -26,7 +29,7 @@ Sync the gradle and that's it! :+1:
 ### Features : 
  * Flawless focus change to the consecutive pin box when the text is entered/deleted.
  * When the user taps on the Pinview, the first empty box available is focused automatically (when the cursor is hidden).
- * Listeners for onDataEntered ( To call can API when the pin is entered) and touch exists.
+ * Listeners for onDataEntered ( To call an API when the pin is entered) and touch exists.
  * Customisations are available for pin box sizes, background(drawables, selectors), inputType etc.
  
 ## Usage
@@ -41,6 +44,7 @@ Sync the gradle and that's it! :+1:
         app:pinWidth="40dp"
         app:pinHeight="40dp"
         app:pinLength="4"
+	app:forceKeyboard="true"
         app:cursorVisible="false"
         app:hint="0"
         app:inputType="text"
@@ -53,6 +57,7 @@ This can be referenced in the java class by the ```findViewById``` method.
 ```app:pinBackground``` : Sets the pin box's background, accepts a drawable or a selector drawable. When a ```selector``` is used, the focused pin box is highlighted. <br />
 ```app:pinWidth``` and ```app:pinHeight``` : Sets the width and height of the pinbox. <br />
 ```app:pinLength``` : number of pin boxes to be displayed.<br />
+```app:forceKeyboard``` : forces the keyboard when the pinview is activity/fragment is opened.
 ```app:cursorVisibility``` : Toggles cursor visibility.<br />
 ```app:hint``` : Pin box hint. <br />
 ```app:inputType``` : Accepts ```number``` or ```text``` as values. <br />
