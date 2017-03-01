@@ -38,6 +38,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cursorVisible="false"
+        app:forceKeyboard="true"
         app:hint="0"
         app:inputType="text"
         app:password="false"

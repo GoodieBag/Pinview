@@ -1,5 +1,24 @@
-package com.goodiebag.pinview;
+/*
+MIT License
+Copyright (c) 2017 GoodieBag
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+ */
 
+package com.goodiebag.pinview;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
@@ -17,10 +36,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static android.text.InputType.TYPE_CLASS_NUMBER;
 import static android.text.InputType.TYPE_CLASS_TEXT;
 import static android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD;
@@ -28,12 +45,25 @@ import static android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD;
 
 
 /**
- * Created by pavan on 11/01/17.
+ * This class implements a pinview for android.
+ * It can be used as a widget in android to take passwords/OTP/pins etc.
+ * It is extended from a LinearLayout, implements TextWatcher, FocusChangeListener and OnKeyListener.
+ * Supports drawableItem/selectors as a background for each pin box.
+ * A listener is wired up to monitor complete data entry.
+ * Can toggle cursor visibility.
+ * Supports numpad and text keypad.
+ * Flawless focus change to the consecutive pinbox.
+ * Date : 11/01/17
+ *
+ * @author Krishanu
+ * @author Pavan
+ * @author Koushik
  */
-
 public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusChangeListener, View.OnKeyListener {
     private final float DENSITY = getContext().getResources().getDisplayMetrics().density;
-    //attributes
+    /**
+     * Attributes
+     */
     private int mPinLength = 4;
     private List<EditText> editTextList = new ArrayList<>();
     private int mPinWidth = 50;
@@ -49,12 +79,16 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     private boolean finalNumberPin = false;
     private PinViewEventListener mListener;
     private boolean fromSetValue = false;
-    private boolean mForceKeyboard = false;
+    private boolean mForceKeyboard = true;
 
 
     public enum InputType {
         TEXT, NUMBER
     }
+
+    /**
+     * Interface for onDataEntered event.
+     */
 
     public interface PinViewEventListener {
         void onDataEntered(Pinview pinview, boolean fromUser);
@@ -82,6 +116,13 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         init(context, attrs, defStyleAttr);
     }
 
+    /**
+     * A method to take care of all the initialisations.
+     *
+     * @param context
+     * @param attrs
+     * @param defStyleAttr
+     */
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
         this.removeAllViews();
         mPinHeight *= DENSITY;
@@ -99,8 +140,10 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
                 for (EditText editText : editTextList) {
                     if (editText.length() == 0) {
                         editText.requestFocus();
-                        InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
+                        if(mForceKeyboard) {
+                            InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                        }
                         focused = true;
                         break;
                     }
@@ -114,15 +157,20 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             }
         });
         //bring up the keyboard
-        if(editTextList.get(0) != null && mForceKeyboard)
+        if (editTextList.get(0) != null && mForceKeyboard)
             editTextList.get(0).postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
+                    inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
                 }
-            },200);
+            }, 200);
+
     }
+
+    /**
+     * Creates editTexts and adds it to the pinview based on the pinLength specified.
+     */
 
     private void createEditTexts() {
         removeAllViews();
@@ -137,6 +185,13 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         setTransformation();
     }
 
+    /**
+     * This method gets the attribute values from the XML, if not found it takes the default values.
+     *
+     * @param context
+     * @param attrs
+     * @param defStyleAttr
+     */
     private void initAttributes(Context context, AttributeSet attrs, int defStyleAttr) {
         if (attrs != null) {
             final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.Pinview, defStyleAttr, 0);
@@ -155,7 +210,13 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         }
     }
 
-
+    /**
+     * Takes care of styling the editText passed in the param.
+     * tag is the index of the editText.
+     *
+     * @param styleEditText
+     * @param tag
+     */
     private void generateOneEditText(EditText styleEditText, String tag) {
         params.setMargins(mSplitWidth / 2, mSplitWidth / 2, mSplitWidth / 2, mSplitWidth / 2);
         filters[0] = new InputFilter.LengthFilter(1);
@@ -197,6 +258,12 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         styleEditText.setOnKeyListener(this);
     }
 
+    /**
+     * Returns the value of the Pinview
+     *
+     * @return
+     */
+
     public String getValue() {
         StringBuilder sb = new StringBuilder();
         for (EditText et : editTextList) {
@@ -205,6 +272,11 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         return sb.toString();
     }
 
+    /**
+     * Sets the value of the Pinview
+     *
+     * @param value
+     */
     public void setValue(@NonNull String value) {
         String regex = "[0-9]+";
         fromSetValue = true;
@@ -264,6 +336,9 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         }
     }
 
+    /**
+     * Handles the character transformation for password inputs.
+     */
     private void setTransformation() {
         if (mPassword) {
             for (EditText editText : editTextList) {
@@ -285,6 +360,15 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
 
     }
 
+    /**
+     * Fired when text changes in the editTexts.
+     * Backspace is also identified here.
+     *
+     * @param charSequence
+     * @param start
+     * @param i1
+     * @param count
+     */
     @Override
     public void onTextChanged(CharSequence charSequence, int start, int i1, int count) {
 
@@ -328,6 +412,14 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
 
     }
 
+    /**
+     * Monitors keyEvent.
+     *
+     * @param view
+     * @param i
+     * @param keyEvent
+     * @return
+     */
     @Override
     public boolean onKey(View view, int i, KeyEvent keyEvent) {
 
@@ -364,6 +456,51 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         return false;
     }
 
+    /**
+     * A class to implement the transformation mechanism
+     */
+    private class PinTransformationMethod implements TransformationMethod {
+
+        private char BULLET = '\u2022';
+
+        @Override
+        public CharSequence getTransformation(CharSequence source, final View view) {
+            return new PasswordCharSequence(source);
+        }
+
+        @Override
+        public void onFocusChanged(final View view, final CharSequence sourceText, final boolean focused, final int direction, final Rect previouslyFocusedRect) {
+
+        }
+
+        private class PasswordCharSequence implements CharSequence {
+            private final CharSequence source;
+
+            public PasswordCharSequence(@NonNull CharSequence source) {
+                this.source = source;
+            }
+
+            @Override
+            public int length() {
+                return source.length();
+            }
+
+            @Override
+            public char charAt(int index) {
+                return BULLET;
+            }
+
+            @Override
+            public CharSequence subSequence(int start, int end) {
+                return new PasswordCharSequence(this.source.subSequence(start, end));
+            }
+
+        }
+    }
+
+    /**
+     * Getters and Setters
+     */
     private int getIndexOfCurrentFocus() {
         return editTextList.indexOf(currentFocus);
     }
@@ -459,7 +596,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     public void setInputType(InputType inputType) {
         this.inputType = inputType;
         int it;
-        for (EditText editText : editTextList){
+        for (EditText editText : editTextList) {
             switch (inputType) {
                 case NUMBER:
                     it = TYPE_CLASS_NUMBER;
@@ -485,42 +622,5 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         this.mListener = listener;
     }
 
-    private class PinTransformationMethod implements TransformationMethod {
 
-        private char BULLET = '\u2022';
-
-        @Override
-        public CharSequence getTransformation(CharSequence source, final View view) {
-            return new PasswordCharSequence(source);
-        }
-
-        @Override
-        public void onFocusChanged(final View view, final CharSequence sourceText, final boolean focused, final int direction, final Rect previouslyFocusedRect) {
-
-        }
-
-        private class PasswordCharSequence implements CharSequence {
-            private final CharSequence source;
-
-            public PasswordCharSequence(@NonNull CharSequence source) {
-                this.source = source;
-            }
-
-            @Override
-            public int length() {
-                return source.length();
-            }
-
-            @Override
-            public char charAt(int index) {
-                return BULLET;
-            }
-
-            @Override
-            public CharSequence subSequence(int start, int end) {
-                return new PasswordCharSequence(this.source.subSequence(start, end));
-            }
-
-        }
-    }
 }
