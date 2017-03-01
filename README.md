@@ -1,6 +1,6 @@
 # Pinview
 
-[![Release](https://jitpack.io/v/GoodieBag/HorizontalPicker.svg)](https://jitpack.io/#GoodieBag/Pinview)
+[![Release](https://jitpack.io/v/GoodieBag/Pinview.svg)](https://jitpack.io/#GoodieBag/Pinview)
 [![API](https://img.shields.io/badge/API-15%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=15)
 
  Pinview library for android :pouting_cat:
