@@ -45,7 +45,7 @@ Sync the gradle and that's it! :+1:
         app:pinHeight="40dp"
         app:pinLength="4"
         app:cursorVisible="false"
-	app:forceKeyboard="true"
+		app:forceKeyboard="true"
         app:hint="0"
         app:inputType="text"
         app:password="false"/>
