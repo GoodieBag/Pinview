@@ -92,7 +92,9 @@ pinview.setPinViewEventListener(new Pinview.PinViewEventListener() {
             }
         });
 ```
-
+#### Note : 
+This library cannot be assured to work on 3rd party keypadboards (especially  when the cursor is toggled off). It works as expected on google keyboards.
+We will be adding a work-around in the future releases.
 
 ## LICENSE
 ```
