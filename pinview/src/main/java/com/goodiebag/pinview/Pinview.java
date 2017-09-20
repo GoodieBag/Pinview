@@ -19,6 +19,7 @@ SOFTWARE.
  */
 
 package com.goodiebag.pinview;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
@@ -36,12 +37,13 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import static android.text.InputType.TYPE_CLASS_NUMBER;
 import static android.text.InputType.TYPE_CLASS_TEXT;
 import static android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD;
-import static android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD;
 
 
 /**
@@ -80,7 +82,6 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     private PinViewEventListener mListener;
     private boolean fromSetValue = false;
     private boolean mForceKeyboard = true;
-
 
     public enum InputType {
         TEXT, NUMBER
@@ -140,15 +141,12 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
                 for (EditText editText : editTextList) {
                     if (editText.length() == 0) {
                         editText.requestFocus();
-                        if(mForceKeyboard) {
-                            InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                            inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-                        }
+                        openKeyboard();
                         focused = true;
                         break;
                     }
                 }
-                if (!focused && editTextList.size() > 0) {
+                if (!focused && editTextList.size() > 0) { // Focus the last view
                     editTextList.get(editTextList.size() - 1).requestFocus();
                 }
                 if (mClickListener != null) {
@@ -156,16 +154,16 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
                 }
             }
         });
-        //bring up the keyboard
-        if (editTextList.get(0) != null && mForceKeyboard)
-            editTextList.get(0).postDelayed(new Runnable() {
+        // Bring up the keyboard
+        final View firstEditText = editTextList.get(0);
+        if (firstEditText != null)
+            firstEditText.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                    openKeyboard();
                 }
             }, 200);
-
+        updateEnabledState();
     }
 
     /**
@@ -241,10 +239,17 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         styleEditText.setBackgroundResource(mPinBackground);
         styleEditText.setPadding(0, 0, 0, 0);
         styleEditText.setTag(tag);
+        styleEditText.setInputType(getKeyboardInputType());
+        styleEditText.addTextChangedListener(this);
+        styleEditText.setOnFocusChangeListener(this);
+        styleEditText.setOnKeyListener(this);
+    }
+
+    private int getKeyboardInputType() {
         int it;
         switch (inputType) {
             case NUMBER:
-                it = TYPE_CLASS_NUMBER;
+                it = TYPE_CLASS_NUMBER | TYPE_NUMBER_VARIATION_PASSWORD;
                 break;
             case TEXT:
                 it = TYPE_CLASS_TEXT;
@@ -252,10 +257,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             default:
                 it = TYPE_CLASS_TEXT;
         }
-        styleEditText.setInputType(it);
-        styleEditText.addTextChangedListener(this);
-        styleEditText.setOnFocusChangeListener(this);
-        styleEditText.setOnKeyListener(this);
+        return it;
     }
 
     /**
@@ -273,12 +275,41 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     }
 
     /**
+     * Requsets focus on current pin view and opens keyboard if forceKeyboard is enabled.
+     *
+     * @return the current focused pin view. It can be used to open softkeyboard manually.
+     */
+    public View requestPinEntryFocus() {
+        int currentTag = Math.max(0, getIndexOfCurrentFocus());
+        EditText currentEditText = editTextList.get(currentTag);
+        if (currentEditText != null) {
+            currentEditText.requestFocus();
+        }
+        openKeyboard();
+        return currentEditText;
+    }
+
+    private void openKeyboard() {
+        if (mForceKeyboard) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+        }
+    }
+
+    /**
+     * Clears the values in the Pinview
+     */
+    public void clearValue() {
+        setValue("");
+    }
+
+    /**
      * Sets the value of the Pinview
      *
      * @param value
      */
     public void setValue(@NonNull String value) {
-        String regex = "[0-9]+";
+        String regex = "[0-9]*"; // Allow empty string to clear the fields
         fromSetValue = true;
         if (inputType == InputType.NUMBER && !value.matches(regex))
             return;
@@ -304,6 +335,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             currentFocus.requestFocus();
         }
         fromSetValue = false;
+        updateEnabledState();
     }
 
     @Override
@@ -371,7 +403,6 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
      */
     @Override
     public void onTextChanged(CharSequence charSequence, int start, int i1, int count) {
-
         if (charSequence.length() == 1 && currentFocus != null) {
             final int currentTag = getIndexOfCurrentFocus();
             if (currentTag < mPinLength - 1) {
@@ -381,7 +412,9 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
                 this.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        editTextList.get(currentTag + 1).requestFocus();
+                        EditText nextEditText = editTextList.get(currentTag + 1);
+                        nextEditText.setEnabled(true);
+                        nextEditText.requestFocus();
                     }
                 }, delay);
             } else {
@@ -404,6 +437,18 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
                 break;
             if (!fromSetValue && index + 1 == mPinLength && mListener != null)
                 mListener.onDataEntered(this, true);
+        }
+        updateEnabledState();
+    }
+
+    /**
+     * Disable views ahead of current focus, so a selector can change the drawing of those views.
+     */
+    private void updateEnabledState() {
+        int currentTag = Math.max(0, getIndexOfCurrentFocus());
+        for (int index = 0; index < editTextList.size(); index++) {
+            EditText editText = editTextList.get(index);
+            editText.setEnabled(index <= currentTag);
         }
     }
 
@@ -595,25 +640,8 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
 
     public void setInputType(InputType inputType) {
         this.inputType = inputType;
-        int it;
+        int it = getKeyboardInputType();
         for (EditText editText : editTextList) {
-            switch (inputType) {
-                case NUMBER:
-                    it = TYPE_CLASS_NUMBER;
-                    break;
-                case TEXT:
-                    it = TYPE_CLASS_TEXT;
-                    break;
-                default:
-                    it = TYPE_CLASS_TEXT;
-            }
-            if (mPassword) {
-                if (inputType == InputType.NUMBER) {
-                    it = TYPE_CLASS_NUMBER | TYPE_NUMBER_VARIATION_PASSWORD;
-                } else if (inputType == InputType.TEXT) {
-                    it = TYPE_CLASS_TEXT | TYPE_TEXT_VARIATION_PASSWORD;
-                }
-            }
             editText.setInputType(it);
         }
     }
@@ -621,6 +649,4 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     public void setPinViewEventListener(PinViewEventListener listener) {
         this.mListener = listener;
     }
-
-
 }
