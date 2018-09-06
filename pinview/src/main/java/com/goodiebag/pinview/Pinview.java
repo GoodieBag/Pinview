@@ -69,6 +69,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     private int mPinLength = 4;
     private List<EditText> editTextList = new ArrayList<>();
     private int mPinWidth = 50;
+    private int mTextSize = 12;
     private int mPinHeight = 50;
     private int mSplitWidth = 20;
     private boolean mCursorVisible = false;
@@ -176,6 +177,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         EditText editText;
         for (int i = 0; i < mPinLength; i++) {
             editText = new EditText(getContext());
+            editText.setTextSize(mTextSize);
             editTextList.add(i, editText);
             this.addView(editText);
             generateOneEditText(editText, "" + i);
@@ -198,6 +200,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             mPinHeight = (int) array.getDimension(R.styleable.Pinview_pinHeight, mPinHeight);
             mPinWidth = (int) array.getDimension(R.styleable.Pinview_pinWidth, mPinWidth);
             mSplitWidth = (int) array.getDimension(R.styleable.Pinview_splitWidth, mSplitWidth);
+            mTextSize = (int) array.getDimension(R.styleable.Pinview_textSize, mTextSize);
             mCursorVisible = array.getBoolean(R.styleable.Pinview_cursorVisible, mCursorVisible);
             mPassword = array.getBoolean(R.styleable.Pinview_password, mPassword);
             mForceKeyboard = array.getBoolean(R.styleable.Pinview_forceKeyboard, mForceKeyboard);
