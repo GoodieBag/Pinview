@@ -11,6 +11,7 @@
         <attr name="forceKeyboard" format ="boolean"/>
         <attr name="hint" format="string"/>
         <attr name="inputType"/>
+        <attr name="textSize" format="dimension"/>
     </declare-styleable>
     <attr name="inputType" format="enum">
         <enum name="text" value="0"/>
