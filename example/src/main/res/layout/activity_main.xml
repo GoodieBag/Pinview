@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cursorVisible="false"
-        app:textColor="#FF0000"
+        app:textColor="#ff0000"
         app:hint=""
         app:inputType="number"
         app:forceKeyboard="true"
