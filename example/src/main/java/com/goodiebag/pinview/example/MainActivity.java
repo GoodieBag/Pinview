@@ -10,14 +10,13 @@ import com.goodiebag.pinview.Pinview;
 
 public class MainActivity extends AppCompatActivity {
     private Pinview pinview1;
-    private Button btnClear;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         pinview1 = (Pinview) findViewById(R.id.pinview1);
-        btnClear = (Button) findViewById(R.id.btnClear);
+        Button btnClear = (Button) findViewById(R.id.btnClear);
         pinview1.setPinViewEventListener(new Pinview.PinViewEventListener() {
             @Override
             public void onDataEntered(Pinview pinview, boolean fromUser) {
