@@ -1,5 +1,6 @@
 package com.goodiebag.pinview.example;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
         pinview5.setCursorShape(R.drawable.example_cursor);
 //        pinview5.setCursorColor(Color.BLUE);
         pinview5.setTextSize(12);
+        pinview5.setTextColor(Color.BLACK);
         pinview5.showCursor(true);
     }
 }

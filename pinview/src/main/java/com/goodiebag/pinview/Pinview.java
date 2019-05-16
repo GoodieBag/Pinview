@@ -689,6 +689,16 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         }
     }
 
+    public void setTextColor(@ColorInt int color) {
+
+        if (editTextList == null || editTextList.isEmpty()) {
+            return;
+        }
+        for (EditText edt : editTextList) {
+          edt.setTextColor(color);
+        }
+    }
+
     public void setCursorShape(@DrawableRes int shape) {
 
         if (editTextList == null || editTextList.isEmpty()) {
