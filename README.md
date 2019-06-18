@@ -39,6 +39,8 @@ Sync the gradle and that's it! :+1:
 <com.goodiebag.pinview.Pinview
         android:id="@+id/pinview"
         app:pinBackground="@drawable/example_drawable"
+        app:pinAcceptedBackground="@drawable/example_accepted_drawable"
+        app:pinRejectedBackground="@drawable/example_rejected_drawable"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:pinWidth="40dp"
@@ -55,6 +57,8 @@ This can be referenced in the java class by the ```findViewById``` method.
 ##### Available xml attributes and explanations : 
 
 ```app:pinBackground``` : Sets the pin box's background, accepts a drawable or a selector drawable. When a ```selector``` is used, the focused pin box is highlighted. <br />
+```app:pinAcceptedBackground``` : Sets the pin box's background when treat as accepted, accepts a drawable or a selector drawable. When a ```selector``` is used, the focused pin box is highlighted. <br />
+```app:pinRejectedBackground``` : Sets the pin box's background when treat as rejected, accepts a drawable or a selector drawable. When a ```selector``` is used, the focused pin box is highlighted. <br />
 ```app:pinWidth``` and ```app:pinHeight``` : Sets the width and height of the pinbox. <br />
 ```app:pinLength``` : number of pin boxes to be displayed.<br />
 ```app:forceKeyboard``` : forces the keyboard when the pinview is activity/fragment is opened.
@@ -74,6 +78,8 @@ Or reference it from findViewById
 ```java
 pin = (Pinview) findViewById(R.id.pinview);
 pin.setPinBackgroundRes(R.drawable.sample_background);
+pin.setPinAcceptedBackground(R.drawable.sample_background);
+pin.setPinRejectedBackground(R.drawable.sample_background);
 pin.setPinHeight(40);
 pin.setPinWidth(40);
 pin.setInputType(Pinview.InputType.NUMBER);
@@ -87,10 +93,32 @@ There is an event listener which is triggered when the user is done entering the
 pinview.setPinViewEventListener(new Pinview.PinViewEventListener() {
             @Override
             public void onDataEntered(Pinview pinview, boolean fromUser) {
-	    	//Make api calls here or what not
                 Toast.makeText(MainActivity.this, pinview.getValue(), Toast.LENGTH_SHORT).show();
+                
+                //test or check accepted rejected
+                if(pinview1.getValue().equals("1234")){
+                    pinview1.setAccepted();
+                } else {
+                    pinview1.setRejected();
+                }
+            }
+
+            @Override
+            public void onAccepted() {
+                //do something on accepted
+            }
+
+            @Override
+            public void onRejected() {
+                //do something on rejected
             }
         });
+```
+
+```java
+pinview.setAccepted(); //on Aceept
+
+pinview.setRejected(); //on Reject
 ```
 #### Note : 
 This library cannot be assured to work on 3rd party keyboards (especially when the cursor is off). It works as expected on google keyboards.

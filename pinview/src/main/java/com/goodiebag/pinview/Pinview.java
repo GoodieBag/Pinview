@@ -66,6 +66,7 @@ import static android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD;
  * @author Krishanu
  * @author Pavan
  * @author Koushik
+ * @author aziz
  */
 public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusChangeListener, View.OnKeyListener {
     private final float                DENSITY        = getContext().getResources().getDisplayMetrics().density;
@@ -82,6 +83,10 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     private       boolean              mDelPressed    = false;
     @DrawableRes
     private       int                  mPinBackground = R.drawable.sample_background;
+    @DrawableRes
+    private       int                  mPinAcceptedBackground = R.drawable.sample_accepted_background;
+    @DrawableRes
+    private       int                  mPinRejectedBackground = R.drawable.sample_rejected_background;
     private       boolean              mPassword      = false;
     private       String               mHint          = "";
     private       InputType            inputType      = InputType.TEXT;
@@ -95,11 +100,15 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     }
 
     /**
-     * Interface for onDataEntered event.
+     * Interface for onDataEntered, onAccepted and onRejected event.
      */
 
     public interface PinViewEventListener {
         void onDataEntered(Pinview pinview, boolean fromUser);
+
+        void onAccepted();
+
+        void onRejected();
     }
 
     OnClickListener mClickListener;
@@ -202,6 +211,8 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         if (attrs != null) {
             final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.Pinview, defStyleAttr, 0);
             mPinBackground = array.getResourceId(R.styleable.Pinview_pinBackground, mPinBackground);
+            mPinAcceptedBackground = array.getResourceId(R.styleable.Pinview_pinAcceptedBackground, mPinAcceptedBackground);
+            mPinRejectedBackground = array.getResourceId(R.styleable.Pinview_pinRejectedBackground, mPinRejectedBackground);
             mPinLength = array.getInt(R.styleable.Pinview_pinLength, mPinLength);
             mPinHeight = (int) array.getDimension(R.styleable.Pinview_pinHeight, mPinHeight);
             mPinWidth = (int) array.getDimension(R.styleable.Pinview_pinWidth, mPinWidth);
@@ -638,6 +649,18 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             editText.setBackgroundResource(res);
     }
 
+    public void setPinAcceptedBackground(@DrawableRes int res){
+        this.mPinAcceptedBackground = res;
+        for (EditText editText : editTextList)
+            editText.setBackgroundResource(res);
+    }
+
+    public void setPinRejectedBackground(@DrawableRes int res){
+        this.mPinRejectedBackground = res;
+        for (EditText editText : editTextList)
+            editText.setBackgroundResource(res);
+    }
+
     @Override
     public void setOnClickListener(OnClickListener l) {
         mClickListener = l;
@@ -739,5 +762,15 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             field.set(editor, drawables);
         } catch (Exception ignored) {
         }
+    }
+
+    public void setRejected(){
+        setPinBackgroundRes(mPinRejectedBackground);
+        if(mListener != null) mListener.onRejected();
+    }
+
+    public void setAccepted(){
+        setPinAcceptedBackground(mPinAcceptedBackground);
+        if(mListener != null) mListener.onAccepted();
     }
 }
