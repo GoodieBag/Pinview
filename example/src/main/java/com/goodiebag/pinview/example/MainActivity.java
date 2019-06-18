@@ -13,11 +13,28 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Pinview pinview1 = findViewById(R.id.pinview1);
+        final Pinview pinview1 = findViewById(R.id.pinview1);
         pinview1.setPinViewEventListener(new Pinview.PinViewEventListener() {
             @Override
             public void onDataEntered(Pinview pinview, boolean fromUser) {
                 Toast.makeText(MainActivity.this, pinview.getValue(), Toast.LENGTH_SHORT).show();
+
+                //test or check accepted rejected
+                if(pinview1.getValue().equals("1234")){
+                    pinview1.setAccepted();
+                } else {
+                    pinview1.setRejected();
+                }
+            }
+
+            @Override
+            public void onAccepted() {
+
+            }
+
+            @Override
+            public void onRejected() {
+
             }
         });
 

@@ -26,6 +26,8 @@
         app:inputType="number"
         app:password="false"
         app:pinBackground="@drawable/example_drawable_with_grey_disabled"
+        app:pinAcceptedBackground="@drawable/example_accepted_drawable"
+        app:pinRejectedBackground="@drawable/example_rejected_drawable"
         app:pinHeight="40dp"
         app:pinLength="4"
         app:pinWidth="40dp"/>
@@ -45,6 +47,8 @@
         app:inputType="text"
         app:password="false"
         app:pinBackground="@drawable/example_drawable"
+        app:pinAcceptedBackground="@drawable/example_accepted_drawable"
+        app:pinRejectedBackground="@drawable/example_rejected_drawable"
         app:pinHeight="40dp"
         app:pinLength="4"
         app:pinWidth="40dp"/>
@@ -63,6 +67,8 @@
         app:inputType="number"
         app:password="true"
         app:pinBackground="@drawable/example_drawable"
+        app:pinAcceptedBackground="@drawable/example_accepted_drawable"
+        app:pinRejectedBackground="@drawable/example_rejected_drawable"
         app:pinHeight="40dp"
         app:pinLength="4"
         app:pinWidth="40dp"/>
@@ -81,6 +87,8 @@
         app:inputType="text"
         app:password="true"
         app:pinBackground="@drawable/example_drawable"
+        app:pinAcceptedBackground="@drawable/example_accepted_drawable"
+        app:pinRejectedBackground="@drawable/example_rejected_drawable"
         app:pinHeight="40dp"
         app:pinLength="4"
         app:pinWidth="40dp"/>
@@ -94,6 +102,8 @@
         android:id="@+id/pinview5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:pinAcceptedBackground="@drawable/example_accepted_drawable"
+        app:pinRejectedBackground="@drawable/example_rejected_drawable"
         app:inputType="text"
         app:pinHeight="40dp"
         app:pinLength="4"
