@@ -21,7 +21,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         // pinView Customize
         Pinview pinview5 = findViewById(R.id.pinview5);
         pinview5.setCursorShape(R.drawable.example_cursor);
