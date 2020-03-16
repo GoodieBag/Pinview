@@ -196,7 +196,13 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
     @SuppressLint("ClickableViewAccessibility")
     private fun generateOneEditText(styleEditText: EditText, tag: String) {
         params!!.setMargins(mSplitWidth / 2, mSplitWidth / 2, mSplitWidth / 2, mSplitWidth / 2)
+
         filters[0] = InputFilter.LengthFilter(1)
+
+        styleEditText.filters = filters
+        styleEditText.layoutParams = params
+        styleEditText.gravity = Gravity.CENTER
+        styleEditText.isCursorVisible = mCursorVisible
 
         if (!mCursorVisible) {
             styleEditText.isClickable = false
@@ -209,15 +215,11 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         styleEditText.apply {
             setBackgroundResource(pinBackground)
             setPadding(0, 0, 0, 0)
+            this.tag = tag
             inputType = keyboardInputType
             addTextChangedListener(this@Pinview)
             onFocusChangeListener = this@Pinview
             setOnKeyListener(this@Pinview)
-            layoutParams = params
-            gravity = Gravity.CENTER
-            isCursorVisible = mCursorVisible
-            this.filters = filters
-            this.tag = tag
         }
     }
 
@@ -295,8 +297,8 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
 
     private fun openKeyboard() {
         if (mForceKeyboard) {
-            val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+            val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            inputMethodManager?.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
         }
     }
 
@@ -368,7 +370,6 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
      */
     override fun onTextChanged(charSequence: CharSequence, start: Int, i1: Int, count: Int) {
 
-
         if (charSequence.length == 1 && currentFocus != null) {
             val currentTag = indexOfCurrentFocus
             if (currentTag < mPinLength - 1) {
@@ -402,7 +403,6 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
                     this.mListener?.onDataEntered(this, true)
                 }
             }
-
         }
 
         updateEnabledState()
