@@ -64,9 +64,28 @@ This can be referenced in the java class by the ```findViewById``` method.
 ```app:password``` : Masks the pin value with ```*``` when true. <br />
 ```app:splitWidth``` : Determines the width between two pin boxes.
 
-### Java : 
+### Kotlin :
 
 To create the view programmatically : 
+```kotlin
+val pin = Pinview(this)
+```
+Or reference it from findViewById
+```kotlin
+val pin = findViewById<Pinview>(R.id.pinview)
+pin.apply {
+    setPinBackgroundRes(R.drawable.sample_background);
+    pinHeight = 40
+    pinWidth = 40
+    setInputType(Pinview.InputType.NUMBER);
+    value = "1235"
+       }
+myLayout.addView(pin)
+```
+
+### Java :
+
+To create the view programmatically :
 ```java
 Pinview pin = new Pinview(this);
 ```
@@ -80,17 +99,16 @@ pin.setInputType(Pinview.InputType.NUMBER);
 pin.setValue("1234");
 myLayout.addView(pin);    
 ```
+
 ##### To get and set the pin values use the ```pin.getValue()``` and ```pin.setValue()``` methods respectively.
 
 There is an event listener which is triggered when the user is done entering the otp which can be used as follows : 
-```java
-pinview.setPinViewEventListener(new Pinview.PinViewEventListener() {
-            @Override
-            public void onDataEntered(Pinview pinview, boolean fromUser) {
-	    	//Make api calls here or what not
-                Toast.makeText(MainActivity.this, pinview.getValue(), Toast.LENGTH_SHORT).show();
+```kotlin
+ pin.setPinViewEventListener(object : PinViewEventListener {
+            override fun onDataEntered(pinview: Pinview?, fromUser: Boolean) {
+                Toast.makeText(this@MainActivity, pinview!!.value, Toast.LENGTH_SHORT).show()
             }
-        });
+        })
 ```
 #### Note : 
 This library cannot be assured to work on 3rd party keyboards (especially when the cursor is off). It works as expected on google keyboards.
