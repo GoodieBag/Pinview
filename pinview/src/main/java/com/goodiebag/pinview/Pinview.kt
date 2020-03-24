@@ -22,13 +22,10 @@ package com.goodiebag.pinview
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PorterDuff
-import android.graphics.Rect
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
-import android.text.method.TransformationMethod
 import android.util.AttributeSet
-import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
@@ -413,6 +410,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
      */
     private fun updateEnabledState() {
         val currentTag = max(0, indexOfCurrentFocus)
+
         for (index in editTextList!!.indices) {
             val editText = editTextList[index]
             editText.isEnabled = index <= currentTag
@@ -461,30 +459,6 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
     }
 
     /**
-     * A class to implement the transformation mechanism
-     */
-    private inner class PinTransformationMethod : TransformationMethod {
-        private val BULLET = '\u2022'
-        override fun getTransformation(source: CharSequence, view: View): CharSequence {
-            return PasswordCharSequence(source)
-        }
-
-        override fun onFocusChanged(view: View, sourceText: CharSequence, focused: Boolean, direction: Int, previouslyFocusedRect: Rect) {}
-        private inner class PasswordCharSequence(private val source: CharSequence) : CharSequence {
-            override val length: Int
-                get() = source.length
-
-            override fun get(index: Int): Char {
-                return BULLET
-            }
-
-            override fun subSequence(startIndex: Int, endIndex: Int): CharSequence {
-                return PasswordCharSequence(source.subSequence(startIndex, endIndex))
-            }
-        }
-    }
-
-    /**
      * Getters and Setters
      */
     private val indexOfCurrentFocus: Int
@@ -496,8 +470,8 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
             mSplitWidth = splitWidth
             val margin = splitWidth / 2
             params?.setMargins(margin, margin, margin, margin)
-            for (editText in editTextList!!) {
-                editText.layoutParams = params
+            this.editTextList?.forEach {
+                it.layoutParams = params
             }
         }
 
@@ -506,8 +480,8 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         set(pinHeight) {
             mPinHeight = pinHeight
             params?.height = pinHeight
-            for (editText in editTextList!!) {
-                editText.layoutParams = params
+            this.editTextList?.forEach {
+                it.layoutParams = params
             }
         }
 
@@ -516,8 +490,8 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         set(pinWidth) {
             mPinWidth = pinWidth
             params?.width = pinWidth
-            for (editText in editTextList!!) {
-                editText.layoutParams = params
+            this.editTextList?.forEach {
+                it.layoutParams = params
             }
         }
 
@@ -539,12 +513,16 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         get() = mHint
         set(mHint) {
             this.mHint = mHint
-            for (editText in editTextList!!) editText.hint = mHint
+            this.editTextList?.forEach {
+                it.hint = mHint
+            }
         }
 
     fun setPinBackgroundRes(@DrawableRes res: Int) {
         pinBackground = res
-        for (editText in editTextList!!) editText.setBackgroundResource(res)
+        this.editTextList?.forEach {
+            it.setBackgroundResource(res)
+        }
     }
 
     override fun setOnClickListener(l: OnClickListener?) {
@@ -557,9 +535,9 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
 
     fun setInputType(inputType: InputType) {
         this.inputType = inputType
-        val it = keyboardInputType
-        for (editText in editTextList!!) {
-            editText.inputType = it
+        val keyInputType = keyboardInputType
+        editTextList?.forEach {
+            it.inputType = keyInputType
         }
     }
 
@@ -569,54 +547,36 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
 
     fun showCursor(status: Boolean) {
         mCursorVisible = status
-        if (editTextList == null || editTextList.isEmpty()) {
-            return
-        }
-        for (edt in editTextList) {
-            edt.isCursorVisible = status
-        }
+        this.editTextList?.forEach { it.isCursorVisible = status }
     }
 
     fun setTextSize(textSize: Int) {
         mTextSize = textSize
-        if (editTextList == null || editTextList.isEmpty()) {
-            return
-        }
-        for (edt in editTextList) {
-            edt.textSize = mTextSize.toFloat()
-        }
+        this.editTextList?.forEach { it.textSize = mTextSize.toFloat() }
     }
 
     fun setCursorColor(@ColorInt color: Int) {
-        if (editTextList == null || editTextList.isEmpty()) {
-            return
-        }
-        for (edt in editTextList) {
-            setCursorColor(edt, color)
+        this.editTextList?.forEach {
+            setCursorColor(it, color)
         }
     }
 
     fun setTextColor(@ColorInt color: Int) {
-        if (editTextList == null || editTextList.isEmpty()) {
-            return
-        }
-        for (edt in editTextList) {
-            edt.setTextColor(color)
+        this.editTextList?.forEach {
+            it.setTextColor(color)
         }
     }
 
     fun setCursorShape(@DrawableRes shape: Int) {
-        if (editTextList == null || editTextList.isEmpty()) {
-            return
-        }
-        for (edt in editTextList) {
+        editTextList?.forEach {
             try {
-                val f = TextView::class.java.getDeclaredField("mCursorDrawableRes")
-                f.isAccessible = true
-                f[edt] = shape
+                val field = TextView::class.java.getDeclaredField("mCursorDrawableRes")
+                field.isAccessible = true
+                field[it] = shape
             } catch (ignored: Exception) {
             }
         }
+
     }
 
     private fun setCursorColor(view: EditText, @ColorInt color: Int) {
