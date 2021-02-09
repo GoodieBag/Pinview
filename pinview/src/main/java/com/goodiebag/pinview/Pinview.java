@@ -50,6 +50,7 @@ import java.util.List;
 import static android.text.InputType.TYPE_CLASS_NUMBER;
 import static android.text.InputType.TYPE_CLASS_TEXT;
 import static android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD;
+import java.util.stream.IntStream;
 
 
 /**
@@ -528,6 +529,17 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         }
 
         private class PasswordCharSequence implements CharSequence {
+
+			@Override
+			public IntStream chars() {
+				return null;
+			}
+
+			@Override
+			public IntStream codePoints() {
+				return null;
+			}
+
             private final CharSequence source;
 
             public PasswordCharSequence(@NonNull CharSequence source) {
@@ -698,6 +710,15 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
           edt.setTextColor(color);
         }
     }
+	
+	public void setTextHintColor(@ColorInt int color){
+		if (editTextList == null || editTextList.isEmpty()){
+			return;
+		}
+		for (EditText edt : editTextList){
+			edt.setHintTextColor(color);
+		}
+	}
 
     public void setCursorShape(@DrawableRes int shape) {
 
