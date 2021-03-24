@@ -72,14 +72,15 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     /**
      * Attributes
      */
-    private       int                  mPinLength     = 4;
-    private       List<EditText>       editTextList   = new ArrayList<>();
-    private       int                  mPinWidth      = 50;
-    private       int                  mTextSize      = 12;
-    private       int                  mPinHeight     = 50;
-    private       int                  mSplitWidth    = 20;
-    private       boolean              mCursorVisible = false;
-    private       boolean              mDelPressed    = false;
+    private int mPinLength = 4;
+    private List<EditText> editTextList = new ArrayList<>();
+    private int mPinWidth = 50;
+    private int mTextSize = 12;
+    private int mTextColor = getResources().getColor(android.R.color.black);
+    private int mPinHeight = 50;
+    private int mSplitWidth = 20;
+    private boolean mCursorVisible = false;
+    private boolean mDelPressed = false;
     @DrawableRes
     private       int                  mPinBackground = R.drawable.sample_background;
     private       boolean              mPassword      = false;
@@ -184,6 +185,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
         for (int i = 0; i < mPinLength; i++) {
             editText = new EditText(getContext());
             editText.setTextSize(mTextSize);
+            editText.setTextColor(mTextColor);
             editTextList.add(i, editText);
             this.addView(editText);
             generateOneEditText(editText, "" + i);
@@ -207,6 +209,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
             mPinWidth = (int) array.getDimension(R.styleable.Pinview_pinWidth, mPinWidth);
             mSplitWidth = (int) array.getDimension(R.styleable.Pinview_splitWidth, mSplitWidth);
             mTextSize = (int) array.getDimension(R.styleable.Pinview_textSize, mTextSize);
+            mTextColor = array.getColor(R.styleable.Pinview_textColor, mTextColor);
             mCursorVisible = array.getBoolean(R.styleable.Pinview_cursorVisible, mCursorVisible);
             mPassword = array.getBoolean(R.styleable.Pinview_password, mPassword);
             mForceKeyboard = array.getBoolean(R.styleable.Pinview_forceKeyboard, mForceKeyboard);
