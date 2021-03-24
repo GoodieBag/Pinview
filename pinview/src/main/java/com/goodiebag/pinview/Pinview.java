@@ -22,9 +22,13 @@ package com.goodiebag.pinview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -37,7 +41,9 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +68,7 @@ import static android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD;
  * @author Koushik
  */
 public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusChangeListener, View.OnKeyListener {
-    private final float DENSITY = getContext().getResources().getDisplayMetrics().density;
+    private final float                DENSITY        = getContext().getResources().getDisplayMetrics().density;
     /**
      * Attributes
      */
@@ -76,14 +82,14 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     private boolean mCursorVisible = false;
     private boolean mDelPressed = false;
     @DrawableRes
-    private int mPinBackground = R.drawable.sample_background;
-    private boolean mPassword = false;
-    private String mHint = "";
-    private InputType inputType = InputType.TEXT;
-    private boolean finalNumberPin = false;
-    private PinViewEventListener mListener;
-    private boolean fromSetValue = false;
-    private boolean mForceKeyboard = true;
+    private       int                  mPinBackground = R.drawable.sample_background;
+    private       boolean              mPassword      = false;
+    private       String               mHint          = "";
+    private       InputType            inputType      = InputType.TEXT;
+    private       boolean              finalNumberPin = false;
+    private       PinViewEventListener mListener;
+    private       boolean              fromSetValue   = false;
+    private       boolean              mForceKeyboard = true;
 
     public enum InputType {
         TEXT, NUMBER
@@ -101,7 +107,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
 
     View currentFocus = null;
 
-    InputFilter filters[] = new InputFilter[1];
+    InputFilter[]             filters = new InputFilter[1];
     LinearLayout.LayoutParams params;
 
 
@@ -286,7 +292,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
      * @return the current focused pin view. It can be used to open softkeyboard manually.
      */
     public View requestPinEntryFocus() {
-        int currentTag = Math.max(0, getIndexOfCurrentFocus());
+        int      currentTag      = Math.max(0, getIndexOfCurrentFocus());
         EditText currentEditText = editTextList.get(currentTag);
         if (currentEditText != null) {
             currentEditText.requestFocus();
@@ -654,5 +660,87 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
 
     public void setPinViewEventListener(PinViewEventListener listener) {
         this.mListener = listener;
+    }
+
+    public void showCursor(boolean status) {
+        mCursorVisible = status;
+        if (editTextList == null || editTextList.isEmpty()) {
+            return;
+        }
+        for (EditText edt : editTextList) {
+            edt.setCursorVisible(status);
+        }
+    }
+
+    public void setTextSize(int textSize) {
+        mTextSize = textSize;
+        if (editTextList == null || editTextList.isEmpty()) {
+            return;
+        }
+        for (EditText edt : editTextList) {
+            edt.setTextSize(mTextSize);
+        }
+    }
+
+    public void setCursorColor(@ColorInt int color) {
+
+        if (editTextList == null || editTextList.isEmpty()) {
+            return;
+        }
+        for (EditText edt : editTextList) {
+            setCursorColor(edt, color);
+        }
+    }
+
+    public void setTextColor(@ColorInt int color) {
+
+        if (editTextList == null || editTextList.isEmpty()) {
+            return;
+        }
+        for (EditText edt : editTextList) {
+          edt.setTextColor(color);
+        }
+    }
+
+    public void setCursorShape(@DrawableRes int shape) {
+
+        if (editTextList == null || editTextList.isEmpty()) {
+            return;
+        }
+        for (EditText edt : editTextList) {
+            try {
+                Field f = TextView.class.getDeclaredField("mCursorDrawableRes");
+                f.setAccessible(true);
+                f.set(edt, shape);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    private void setCursorColor(EditText view, @ColorInt int color) {
+        try {
+            // Get the cursor resource id
+            Field field = TextView.class.getDeclaredField("mCursorDrawableRes");
+            field.setAccessible(true);
+            int drawableResId = field.getInt(view);
+
+            // Get the editor
+            field = TextView.class.getDeclaredField("mEditor");
+            field.setAccessible(true);
+            Object editor = field.get(view);
+
+            // Get the drawable and set a color filter
+            Drawable drawable = ContextCompat.getDrawable(view.getContext(), drawableResId);
+            if (drawable != null) {
+                drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+            }
+            Drawable[] drawables = {drawable, drawable};
+
+            // Set the drawables
+            field = editor.getClass().getDeclaredField("mCursorDrawable");
+            field.setAccessible(true);
+            field.set(editor, drawables);
+        } catch (Exception ignored) {
+        }
     }
 }

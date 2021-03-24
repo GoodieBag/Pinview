@@ -21,7 +21,7 @@ allprojects {
 Add the dependency : 
 ```java
 dependencies {
-	   compile 'com.github.GoodieBag:Pinview:v1.3'
+	   implementation 'com.github.GoodieBag:Pinview:v1.4'
 	}
 ```
 Sync the gradle and that's it! :+1:
