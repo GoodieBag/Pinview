@@ -264,9 +264,8 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
                 }
             }
             if (mPinLength > 0) {
-                if (lastTagHavingValue < mPinLength - 1) {
-                    currentFocus = editTextList[lastTagHavingValue + 1]
-                } else {
+                currentFocus = editTextList[mPinLength - 1]
+                if (lastTagHavingValue == mPinLength - 1) {
                     currentFocus = editTextList[mPinLength - 1]
                     if (inputType == InputType.NUMBER || mPassword) {
                         this.finalNumberPin = true
@@ -383,7 +382,9 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
                 finalNumberPin = true
             }
         } else if (charSequence.isEmpty()) {
-
+            if(indexOfCurrentFocus < 0){
+                return
+            }
             val currentTag = indexOfCurrentFocus
             this.mDelPressed = true
 
