@@ -18,7 +18,20 @@ allprojects {
 		}
 	}
 ```
-Add the dependency : 
+Add dependency:
+
+Latest Version:
+
+Has improvements and bug fixes - [Release notes](https://github.com/GoodieBag/Pinview/releases/tag/v1.5)
+```java
+dependencies {
+	   implementation 'com.github.GoodieBag:Pinview:v1.5'
+	}
+```
+OR 
+
+Stable version : 
+ 
 ```java
 dependencies {
 	   implementation 'com.github.GoodieBag:Pinview:v1.4'
