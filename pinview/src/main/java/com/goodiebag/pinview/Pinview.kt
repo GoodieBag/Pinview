@@ -22,6 +22,7 @@ package com.goodiebag.pinview
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PorterDuff
+import android.graphics.Typeface
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
@@ -68,6 +69,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
     private var mSplitWidth = 20
     private var mCursorVisible = false
     private var mDelPressed = false
+    private var mTypeFace: Typeface? = null
 
     @get:DrawableRes
     @DrawableRes
@@ -93,9 +95,9 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
     }
 
     var mClickListener: OnClickListener? = null
-    var currentFocus: View? = null
+    var currentFocus: View? = null // Will be null if there are no pin-views
     var filters = arrayOfNulls<InputFilter>(1)
-    var params: LayoutParams? = null
+    lateinit var params: LayoutParams
 
     /**
      * A method to take care of all the initialisations.
@@ -127,9 +129,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
             if (!focused && editTextList.size > 0) { // Focus the last view
                 editTextList[editTextList.size - 1].requestFocus()
             }
-            if (mClickListener != null) {
-                mClickListener!!.onClick(this@Pinview)
-            }
+            mClickListener?.onClick(this@Pinview)
         }
         // Bring up the keyboard
         val firstEditText: View? = editTextList.firstOrNull() // list is empty, if pinLength==0
@@ -148,6 +148,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         for (i in 0 until mPinLength) {
             editText = EditText(context)
             editText.textSize = mTextSize.toFloat()
+            mTypeFace.let { editText.typeface = it }
             editTextList.add(i, editText)
             this.addView(editText)
             generateOneEditText(editText, "" + i)
@@ -553,9 +554,22 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
 
     fun setTextSize(textSize: Int) {
         mTextSize = textSize
-        this.editTextList.forEach { it.textSize = mTextSize.toFloat() }
+        updateEditTexts()
     }
 
+    fun setTypeface(typeFace: Typeface?) {
+        mTypeFace = typeFace
+        updateEditTexts()
+    }
+
+    private fun updateEditTexts() {
+        for (edt in editTextList) {
+            edt.textSize = mTextSize.toFloat()
+            edt.layoutParams = params
+            mTypeFace?.let { edt.typeface = it }
+        }
+    }
+    
     fun setCursorColor(@ColorInt color: Int) {
         this.editTextList.forEach {
             setCursorColor(it, color)
