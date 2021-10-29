@@ -91,7 +91,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
      * Interface for onDataEntered event.
      */
     interface PinViewEventListener {
-        fun onDataEntered(pinview: Pinview?, fromUser: Boolean)
+        fun onDataEntered(pinview: Pinview, fromUser: Boolean)
     }
 
     var mClickListener: OnClickListener? = null
@@ -545,6 +545,14 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
 
     fun setPinViewEventListener(listener: PinViewEventListener?) {
         mListener = listener
+    }
+
+    fun setPinViewEventListener(listener: (Pinview, Boolean) -> Unit) {
+        mListener = object: PinViewEventListener {
+            override fun onDataEntered(pinview: Pinview, fromUser: Boolean) {
+                listener(pinview, fromUser)
+            }
+        }
     }
 
     fun showCursor(status: Boolean) {
