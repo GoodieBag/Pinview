@@ -481,7 +481,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         set(splitWidth) {
             mSplitWidth = splitWidth
             val margin = splitWidth / 2
-            params?.setMargins(margin, margin, margin, margin)
+            params.setMargins(margin, margin, margin, margin)
             this.pinTextViewList.forEach {
                 it.layoutParams = params
             }
@@ -491,7 +491,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         get() = mPinHeight
         set(pinHeight) {
             mPinHeight = pinHeight
-            params?.height = pinHeight
+            params.height = pinHeight
             this.pinTextViewList.forEach {
                 it.layoutParams = params
             }
@@ -501,7 +501,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         get() = mPinWidth
         set(pinWidth) {
             mPinWidth = pinWidth
-            params?.width = pinWidth
+            params.width = pinWidth
             this.pinTextViewList.forEach {
                 it.layoutParams = params
             }
