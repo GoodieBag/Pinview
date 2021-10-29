@@ -132,8 +132,8 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
             }
         }
         // Bring up the keyboard
-        val firstEditText: View = editTextList.first()
-        firstEditText.postDelayed({ openKeyboard() }, 200)
+        val firstEditText: View? = editTextList.firstOrNull() // list is empty, if pinLength==0
+        firstEditText?.postDelayed({ openKeyboard() }, 200)
         updateEnabledState()
     }
 
