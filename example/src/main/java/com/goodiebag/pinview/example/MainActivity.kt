@@ -20,6 +20,8 @@ class MainActivity : AppCompatActivity() {
             }
         })
         setFont(pinview1)
+        val fontScaledDensity = resources.displayMetrics.scaledDensity
+        pinview1.setTextPadding(0, (4 * fontScaledDensity).toInt(), 0, 0)
 
         // pinView Customize
         val pinview5 = findViewById<Pinview>(R.id.pinview5)
