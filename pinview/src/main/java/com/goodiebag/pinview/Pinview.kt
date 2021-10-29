@@ -31,6 +31,7 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
+import android.view.View.OnLayoutChangeListener
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -38,6 +39,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import java.util.*
+import kotlin.math.abs
 import kotlin.math.max
 
 /**
@@ -83,6 +85,8 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
     private var fromSetValue = false
     private var mForceKeyboard = true
 
+    private var lastAppliedPinHeight = 0 // For auto adjusting to square pin sizes
+
     enum class InputType {
         TEXT, NUMBER
     }
@@ -118,9 +122,10 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         createEditTexts()
         super.setOnClickListener {
             var focused = false
-            for (editText in pinTextViewList) {
-                if (editText.length() == 0) {
-                    editText.requestFocus()
+            for (pin in pinTextViewList) {
+                pin.maxWidth = mPinWidth
+                if (pin.length() == 0) {
+                    pin.requestFocus()
                     openKeyboardIfForced()
                     focused = true
                     break
@@ -135,6 +140,43 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         val firstEditText: View? = pinTextViewList.firstOrNull() // list is empty, if pinLength==0
         firstEditText?.postDelayed({ openKeyboard() }, 200)
         updateEnabledState()
+        // View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom
+        val listener = OnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+            if (pinTextViewList.isNotEmpty()) {
+                val lastPin = pinTextViewList.last()
+                val containerEndCoordinate = this@Pinview.let { it.x + it.width }
+                val lastPinEndCoordinate = lastPin.x + lastPin.width
+                if (lastPin.width > mPinWidth) {
+                    // Turn off auto width distribution, because otherwise they always scale to fit available space
+                    useFixedWidthPins()
+                } else if (autoAdjustWidth && lastPinEndCoordinate > containerEndCoordinate) {
+                    if (autoAdjustWidth) {
+                        // Pin is too wide, we need to reduce it
+                        useWeightedWidthPins()
+                    }
+                } else if (autoAdjustToSquareFormat && abs(lastPin.width - lastAppliedPinHeight) > 0.1f) {
+                    // allow some difference, in case something moves on layout and reduce risk of infinite layout loop, and because its floats and equal is bad
+                    // Check if something changed they layout or sizing
+                    lastAppliedPinHeight = lastPin.width
+                    params.height = lastAppliedPinHeight
+                    updateEditTexts()
+                    requestLayout()
+                }
+            }
+        }
+        addOnLayoutChangeListener(listener)
+    }
+
+    private fun useWeightedWidthPins() {
+        params.weight = 1f
+        updateEditTexts() // apply the new params
+        requestLayout()
+    }
+
+    private fun useFixedWidthPins() {
+        params.weight = 0f
+        updateEditTexts() // apply the new params
+        requestLayout()
     }
 
     /**
@@ -197,7 +239,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
      */
     @SuppressLint("ClickableViewAccessibility")
     private fun generateOneEditText(styleEditText: TextView, tag: String) {
-        params!!.setMargins(mSplitWidth / 2, mSplitWidth / 2, mSplitWidth / 2, mSplitWidth / 2)
+        params.setMargins(mSplitWidth / 2, mSplitWidth / 2, mSplitWidth / 2, mSplitWidth / 2)
 
         filters[0] = InputFilter.LengthFilter(1)
 
@@ -396,7 +438,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
                 finalNumberPin = true
             }
         } else if (charSequence.isEmpty()) {
-            if(indexOfCurrentFocus < 0){
+            if (indexOfCurrentFocus < 0) {
                 return
             }
             val currentTag = indexOfCurrentFocus
@@ -510,6 +552,27 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
             }
         }
 
+    /**
+     * Ensure the pins fit within the Pinview parent.
+     */
+    var autoAdjustWidth: Boolean = true
+        set(value) {
+            field = value
+            if (!value) {
+                useFixedWidthPins()
+            }
+            requestLayout()
+        }
+
+    /**
+     * When reducing size of Pins due to lack of width, also reduce height to keep the pin square.
+     */
+    var autoAdjustToSquareFormat: Boolean = false
+        set(value) {
+            field = value
+            requestLayout()
+        }
+
     var pinLength: Int
         get() = mPinLength
         set(pinLength) {
@@ -584,10 +647,11 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
     }
 
     private fun updateEditTexts() {
-        for (edt in pinTextViewList) {
-            edt.textSize = mTextSize.toFloat()
-            edt.layoutParams = params
-            mTypeFace?.let { edt.typeface = it }
+        for (pin in pinTextViewList) {
+            pin.textSize = mTextSize.toFloat()
+            pin.layoutParams = params
+            pin.requestLayout()
+            mTypeFace?.let { pin.typeface = it }
         }
     }
 
