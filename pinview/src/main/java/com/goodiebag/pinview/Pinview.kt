@@ -174,7 +174,9 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         mPinHeight = array.getDimension(R.styleable.Pinview_pinHeight, mPinHeight.toFloat()).toInt()
         mPinWidth = array.getDimension(R.styleable.Pinview_pinWidth, mPinWidth.toFloat()).toInt()
         mSplitWidth = array.getDimension(R.styleable.Pinview_splitWidth, mSplitWidth.toFloat()).toInt()
-        mTextSize = array.getDimension(R.styleable.Pinview_textSize, mTextSize.toFloat()).toInt()
+        // We expect mTextSize to be sp, but we allow specifying via xml in any dimension resource as standard. Hence the scaling here
+        val scaledDensity = resources.displayMetrics.scaledDensity
+        mTextSize = (array.getDimensionPixelSize(R.styleable.Pinview_textSize, (mTextSize * scaledDensity).toInt()) / scaledDensity).toInt()
         mCursorVisible = array.getBoolean(R.styleable.Pinview_cursorVisible, mCursorVisible)
         mPassword = array.getBoolean(R.styleable.Pinview_password, mPassword)
         mForceKeyboard = array.getBoolean(R.styleable.Pinview_forceKeyboard, mForceKeyboard)
