@@ -121,7 +121,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
             for (editText in editTextList) {
                 if (editText.length() == 0) {
                     editText.requestFocus()
-                    openKeyboard()
+                    openKeyboardIfForced()
                     focused = true
                     break
                 }
@@ -280,23 +280,32 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         }
 
     /**
-     * Requsets focus on current pin view and opens keyboard if forceKeyboard is enabled.
+     * Requests focus on current pin view and opens keyboard if forceKeyboard is enabled.
+     * If open keyboard is disabled in XML, use openKeyboard()
      *
-     * @return the current focused pin view. It can be used to open softkeyboard manually.
+     * @return the current focused pin view. It can be used to open soft-keyboard manually.
      */
     fun requestPinEntryFocus(): View {
         val currentTag = max(0, indexOfCurrentFocus)
         val currentEditText = editTextList[currentTag]
         currentEditText.requestFocus()
-        openKeyboard()
+        openKeyboardIfForced()
         return currentEditText
     }
 
-    private fun openKeyboard() {
+    private fun openKeyboardIfForced() {
         if (mForceKeyboard) {
-            val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-            inputMethodManager?.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+            openKeyboard()
         }
+    }
+
+    /**
+     * Request the keyboard to open on the currently focused view
+     */
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun openKeyboard() {
+        val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
     }
 
     /**
