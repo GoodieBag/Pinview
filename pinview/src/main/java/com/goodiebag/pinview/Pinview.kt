@@ -21,6 +21,7 @@ package com.goodiebag.pinview
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.text.Editable
@@ -147,6 +148,8 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         for (i in 0 until mPinLength) {
             editText = TextView(context)
             editText.textSize = mTextSize.toFloat()
+            editText.isFocusableInTouchMode = true // EditText behaviour
+            editText.setTextColor(Color.BLACK) // color like EditText instead of greish
             mTypeFace.let { editText.typeface = it }
             pinTextViewList.add(i, editText)
             this.addView(editText)
