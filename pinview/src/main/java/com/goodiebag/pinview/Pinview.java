@@ -75,7 +75,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
     private       int                  mPinLength     = 4;
     private       List<EditText>       editTextList   = new ArrayList<>();
     private       int                  mPinWidth      = 50;
-    private       int                  mTextSize      = 12;
+    private       int                  mTextSize      = 16;
     private       int                  mPinHeight     = 50;
     private       int                  mSplitWidth    = 20;
     private       boolean              mCursorVisible = false;
