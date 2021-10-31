@@ -515,7 +515,7 @@ public class Pinview extends LinearLayout implements TextWatcher, View.OnFocusCh
      */
     private class PinTransformationMethod implements TransformationMethod {
 
-        private char BULLET = '\u002A';
+        private char BULLET = '\u204E';
 
         @Override
         public CharSequence getTransformation(CharSequence source, final View view) {
