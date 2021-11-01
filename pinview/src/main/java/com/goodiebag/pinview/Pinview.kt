@@ -631,6 +631,10 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         }
     }
 
+    fun clearPinViewEventListener() {
+        mListener = null
+    }
+
     fun showCursor(status: Boolean) {
         mCursorVisible = status
         this.pinTextViewList.forEach { it.isCursorVisible = status }
