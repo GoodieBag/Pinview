@@ -14,11 +14,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val pinview1 = findViewById<Pinview>(R.id.pinview1)
-        pinview1.setPinViewEventListener(object : PinViewEventListener {
-            override fun onDataEntered(pinview: Pinview?, fromUser: Boolean) {
-                Toast.makeText(this@MainActivity, pinview!!.value, Toast.LENGTH_SHORT).show()
-            }
-        })
+        pinview1.setPinViewEventListener { pinview: Pinview, fromUser: Boolean ->
+            Toast.makeText(this@MainActivity, pinview.value, Toast.LENGTH_SHORT).show()
+        }
         setFont(pinview1)
 
         // pinView Customize
