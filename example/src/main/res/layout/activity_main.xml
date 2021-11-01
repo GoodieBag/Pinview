@@ -106,14 +106,15 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Auto adjusting width"/>
+        android:text="Auto adjusting width and to fit, and height to square"/>
 
+    <!-- pinHeight 0dp means set height equal to width. Width is auto-adjusted if pin is too wide to fit screen by default, see Pinview.autoAdjustWidth -->
     <com.goodiebag.pinview.Pinview
         android:id="@+id/pinview6"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:inputType="text"
-        app:pinHeight="40dp"
+        app:pinHeight="0dp"
         app:pinLength="4"
         app:pinWidth="40dp"/>
 
@@ -122,7 +123,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:inputType="text"
-        app:pinHeight="40dp"
+        app:pinHeight="0dp"
         app:pinLength="8"
         app:pinWidth="40dp"/>
 

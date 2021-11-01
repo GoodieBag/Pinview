@@ -30,9 +30,6 @@ class MainActivity : AppCompatActivity() {
             setTextColor(Color.BLACK)
             showCursor(true)
         }
-
-        findViewById<Pinview>(R.id.pinview6).autoAdjustToSquareFormat = true
-        findViewById<Pinview>(R.id.pinview7).autoAdjustToSquareFormat = true
     }
 
     @SuppressLint("NewApi")

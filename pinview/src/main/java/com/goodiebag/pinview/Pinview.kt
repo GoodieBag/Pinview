@@ -154,7 +154,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
                         // Pin is too wide, we need to reduce it
                         useWeightedWidthPins()
                     }
-                } else if (autoAdjustToSquareFormat && abs(lastPin.width - lastAppliedPinHeight) > 0.1f) {
+                } else if (mPinHeight == 0 && abs(lastPin.width - lastAppliedPinHeight) > 0.1f) {
                     // allow some difference, in case something moves on layout and reduce risk of infinite layout loop, and because its floats and equal is bad
                     // Check if something changed they layout or sizing
                     lastAppliedPinHeight = lastPin.width
@@ -561,15 +561,6 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
             if (!value) {
                 useFixedWidthPins()
             }
-            requestLayout()
-        }
-
-    /**
-     * When reducing size of Pins due to lack of width, also reduce height to keep the pin square.
-     */
-    var autoAdjustToSquareFormat: Boolean = false
-        set(value) {
-            field = value
             requestLayout()
         }
 
