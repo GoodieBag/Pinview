@@ -1,130 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:id="@+id/activity_main"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="#e1e1e1"
-              android:orientation="vertical"
-              android:paddingLeft="@dimen/activity_horizontal_margin"
-              android:paddingTop="@dimen/activity_vertical_margin"
-              android:paddingRight="@dimen/activity_horizontal_margin"
-              android:paddingBottom="@dimen/activity_vertical_margin">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#e1e1e1">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Number"/>
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin">
 
-    <com.goodiebag.pinview.Pinview
-        android:id="@+id/pinview1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cursorVisible="false"
-        app:forceKeyboard="true"
-        app:hint=""
-        app:inputType="number"
-        app:password="false"
-        app:pinBackground="@drawable/example_drawable_with_grey_disabled"
-        app:pinHeight="40dp"
-        app:pinLength="4"
-        app:pinWidth="40dp"
-        tools:hint="0"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Number" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Text"/>
+        <com.goodiebag.pinview.Pinview
+            android:id="@+id/pinview1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cursorVisible="false"
+            app:forceKeyboard="true"
+            app:hint=""
+            app:inputType="number"
+            app:password="false"
+            app:pinBackground="@drawable/example_drawable_with_grey_disabled"
+            app:pinHeight="40dp"
+            app:pinLength="4"
+            app:pinWidth="40dp"
+            tools:hint="0" />
 
-    <com.goodiebag.pinview.Pinview
-        android:id="@+id/pinview2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cursorVisible="false"
-        app:forceKeyboard="true"
-        app:hint=""
-        app:inputType="text"
-        app:password="false"
-        app:pinBackground="@drawable/example_drawable"
-        app:pinHeight="40dp"
-        app:pinLength="4"
-        app:pinWidth="40dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Text" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Number-Password"/>
+        <com.goodiebag.pinview.Pinview
+            android:id="@+id/pinview2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cursorVisible="false"
+            app:forceKeyboard="true"
+            app:hint=""
+            app:inputType="text"
+            app:password="false"
+            app:pinBackground="@drawable/example_drawable"
+            app:pinHeight="40dp"
+            app:pinLength="4"
+            app:pinWidth="40dp" />
 
-    <com.goodiebag.pinview.Pinview
-        android:id="@+id/pinview3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cursorVisible="false"
-        app:hint="0"
-        app:inputType="number"
-        app:password="true"
-        app:pinBackground="@drawable/example_drawable"
-        app:pinHeight="40dp"
-        app:pinLength="4"
-        app:pinWidth="40dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Number-Password" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Text-Password"/>
+        <com.goodiebag.pinview.Pinview
+            android:id="@+id/pinview3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cursorVisible="false"
+            app:hint="0"
+            app:inputType="number"
+            app:password="true"
+            app:pinBackground="@drawable/example_drawable"
+            app:pinHeight="40dp"
+            app:pinLength="4"
+            app:pinWidth="40dp" />
 
-    <com.goodiebag.pinview.Pinview
-        android:id="@+id/pinview4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cursorVisible="false"
-        app:hint="0"
-        app:inputType="text"
-        app:password="true"
-        app:pinBackground="@drawable/example_drawable"
-        app:pinHeight="40dp"
-        app:pinLength="4"
-        app:pinWidth="40dp"
-        app:textSize="9sp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Text-Password" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Custom Pin View (with dp textSize)"/>
+        <com.goodiebag.pinview.Pinview
+            android:id="@+id/pinview4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cursorVisible="false"
+            app:hint="0"
+            app:inputType="text"
+            app:password="true"
+            app:pinBackground="@drawable/example_drawable"
+            app:pinHeight="40dp"
+            app:pinLength="4"
+            app:pinWidth="40dp"
+            app:textSize="9sp" />
 
-    <com.goodiebag.pinview.Pinview
-        android:id="@+id/pinview5"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:inputType="text"
-        app:pinHeight="40dp"
-        app:pinLength="4"
-        app:pinWidth="40dp"
-        app:textSize="18dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Custom Pin View (with dp textSize)" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Auto adjusting width and to fit, and height to square"/>
+        <com.goodiebag.pinview.Pinview
+            android:id="@+id/pinview5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:inputType="text"
+            app:pinHeight="40dp"
+            app:pinLength="4"
+            app:pinWidth="40dp"
+            app:textSize="18dp" />
 
-    <!-- pinHeight 0dp means set height equal to width. Width is auto-adjusted if pin is too wide to fit screen by default, see Pinview.autoAdjustWidth -->
-    <com.goodiebag.pinview.Pinview
-        android:id="@+id/pinview6"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:inputType="text"
-        app:pinHeight="0dp"
-        app:pinLength="4"
-        app:pinWidth="40dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Auto adjusting width and to fit, and height to square" />
 
-    <com.goodiebag.pinview.Pinview
-        android:id="@+id/pinview7"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:inputType="text"
-        app:pinHeight="0dp"
-        app:pinLength="8"
-        app:pinWidth="40dp"/>
+        <!-- pinHeight 0dp means set height equal to width. Width is auto-adjusted if pin is too wide to fit screen by default, see Pinview.autoAdjustWidth -->
+        <com.goodiebag.pinview.Pinview
+            android:id="@+id/pinview6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:inputType="text"
+            app:pinHeight="0dp"
+            app:pinLength="4"
+            app:pinWidth="40dp" />
 
-</LinearLayout>
+        <com.goodiebag.pinview.Pinview
+            android:id="@+id/pinview7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:inputType="text"
+            app:pinHeight="0dp"
+            app:pinLength="8"
+            app:pinWidth="40dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Auto adjusting width, but keep fixed height (note we don't auto-adjust text-size)" />
+
+        <com.goodiebag.pinview.Pinview
+            android:id="@+id/pinview8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:inputType="text"
+            app:pinHeight="40dp"
+            app:pinLength="8"
+            app:pinWidth="40dp" />
+
+    </LinearLayout>
+</ScrollView>
