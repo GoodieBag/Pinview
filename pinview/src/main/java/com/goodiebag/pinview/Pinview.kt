@@ -57,7 +57,8 @@ import kotlin.math.max
  * @author Pavan
  * @author Koushik
  */
-class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : LinearLayout(context, attrs, defStyleAttr), TextWatcher, View.OnFocusChangeListener, View.OnKeyListener {
+class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : LinearLayout(context, attrs, defStyleAttr), TextWatcher,
+    View.OnFocusChangeListener, View.OnKeyListener {
     private val DENSITY = getContext().resources.displayMetrics.density
 
     /**
@@ -80,7 +81,6 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
     private var mPassword = false
     private var mHint: String? = ""
     private var inputType = InputType.TEXT
-    private var finalNumberPin = false
     private var mListener: PinViewEventListener? = null
     private var fromSetValue = false
     private var mForceKeyboard = true
@@ -189,6 +189,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
 
         for (i in 0 until mPinLength) {
             editText = TextView(context)
+            editText.text = "" // Lets ensure its never null
             editText.textSize = mTextSize.toFloat()
             editText.isFocusableInTouchMode = true // EditText behaviour
             editText.setTextColor(Color.BLACK) // color like EditText instead of greish
@@ -301,22 +302,15 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
                 return
             }
 
-            var lastTagHavingValue = -1
             for (i in pinTextViewList.indices) {
-                if (value.length > i) {
-                    lastTagHavingValue = i
-                    pinTextViewList[i].text = value[i].toString()
-                } else {
-                    pinTextViewList[i].text = ""
-                }
+                pinTextViewList[i].text = if (value.length > i) value[i].toString() else ""
             }
             if (mPinLength > 0) {
                 currentFocus = pinTextViewList[mPinLength - 1]
-                if (lastTagHavingValue == mPinLength - 1) {
+                if (value.length < mPinLength) {
+                    currentFocus = pinTextViewList[value.length]
+                } else {
                     currentFocus = pinTextViewList[mPinLength - 1]
-                    if (inputType == InputType.NUMBER || mPassword) {
-                        this.finalNumberPin = true
-                    }
                     this.mListener?.onDataEntered(this, false)
                 }
                 currentFocus?.requestFocus()
@@ -421,7 +415,6 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
      * @param count
      */
     override fun onTextChanged(charSequence: CharSequence, start: Int, i1: Int, count: Int) {
-
         if (charSequence.length == 1 && currentFocus != null) {
             val currentTag = indexOfCurrentFocus
             if (currentTag < mPinLength - 1) {
@@ -433,21 +426,11 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
                     nextEditText.requestFocus()
                 }, delay)
             }
-
-            if (currentTag == mPinLength - 1 && inputType == InputType.NUMBER || currentTag == mPinLength - 1 && mPassword) {
-                finalNumberPin = true
-            }
         } else if (charSequence.isEmpty()) {
             if (indexOfCurrentFocus < 0) {
                 return
             }
-            val currentTag = indexOfCurrentFocus
             this.mDelPressed = true
-
-            //For the last cell of the non password text fields. Clear the text without changing the focus.
-            if (!this.pinTextViewList[currentTag].text.isNullOrEmpty()) {
-                this.pinTextViewList[currentTag].text = ""
-            }
         }
 
         this.pinTextViewList.forEach { item ->
@@ -488,27 +471,22 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         if (keyEvent.action == KeyEvent.ACTION_UP && i == KeyEvent.KEYCODE_DEL) {
             // Perform action on Del press
             val currentTag = indexOfCurrentFocus
-            val currentEditText = pinTextViewList[currentTag].text
-            //Last tile of the number pad. Clear the edit text without changing the focus.
-            if (inputType == InputType.NUMBER && currentTag == mPinLength - 1 && finalNumberPin ||
-                    mPassword && currentTag == mPinLength - 1 && finalNumberPin) {
-                if (!currentEditText.isNullOrEmpty()) {
-                    this.pinTextViewList[currentTag].text = ""
-                }
-                finalNumberPin = false
+            val currentPin = pinTextViewList[currentTag]
+            // Last tile of the number pad. Clear the edit text without changing the focus.
+            if (currentTag == mPinLength - 1 && currentPin.text.isNotEmpty()) {
+                pinTextViewList[currentTag].text = ""
             } else if (currentTag > 0) {
                 mDelPressed = true
-                if (currentEditText.isNullOrEmpty()) {
-                    //Takes it back one tile
-                    this.pinTextViewList[currentTag - 1].requestFocus()
+                if (currentPin.text.isEmpty()) {
+                    // Takes it back one tile
+                    pinTextViewList[currentTag - 1].requestFocus()
+                    pinTextViewList[currentTag - 1].text = ""
+                } else {
+                    currentPin.text = ""
                 }
-                this.pinTextViewList[currentTag].text = ""
             } else {
-                //For the first cell
-
-                if (!currentEditText.isNullOrEmpty()) {
-                    pinTextViewList[currentTag].text = ""
-                }
+                // For the first cell
+                currentPin.text = ""
             }
             return true
         }
@@ -615,7 +593,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
     }
 
     fun setPinViewEventListener(listener: (Pinview, Boolean) -> Unit) {
-        mListener = object: PinViewEventListener {
+        mListener = object : PinViewEventListener {
             override fun onDataEntered(pinview: Pinview, fromUser: Boolean) {
                 listener(pinview, fromUser)
             }

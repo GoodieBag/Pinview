@@ -22,7 +22,7 @@
             android:text="Number" />
 
         <com.goodiebag.pinview.Pinview
-            android:id="@+id/pinview1"
+            android:id="@+id/pinview0"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cursorVisible="false"
@@ -42,7 +42,7 @@
             android:text="Text" />
 
         <com.goodiebag.pinview.Pinview
-            android:id="@+id/pinview2"
+            android:id="@+id/pinview1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cursorVisible="false"
@@ -61,7 +61,7 @@
             android:text="Number-Password" />
 
         <com.goodiebag.pinview.Pinview
-            android:id="@+id/pinview3"
+            android:id="@+id/pinview2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cursorVisible="false"
@@ -79,7 +79,7 @@
             android:text="Text-Password" />
 
         <com.goodiebag.pinview.Pinview
-            android:id="@+id/pinview4"
+            android:id="@+id/pinview3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cursorVisible="false"
@@ -98,7 +98,7 @@
             android:text="Custom Pin View (with dp textSize)" />
 
         <com.goodiebag.pinview.Pinview
-            android:id="@+id/pinview5"
+            android:id="@+id/pinview4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:inputType="text"
@@ -114,7 +114,7 @@
 
         <!-- pinHeight 0dp means set height equal to width. Width is auto-adjusted if pin is too wide to fit screen by default, see Pinview.autoAdjustWidth -->
         <com.goodiebag.pinview.Pinview
-            android:id="@+id/pinview6"
+            android:id="@+id/pinview5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:inputType="text"
@@ -123,7 +123,7 @@
             app:pinWidth="40dp" />
 
         <com.goodiebag.pinview.Pinview
-            android:id="@+id/pinview7"
+            android:id="@+id/pinview6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:inputType="text"
@@ -137,7 +137,7 @@
             android:text="Auto adjusting width, but keep fixed height (note we don't auto-adjust text-size)" />
 
         <com.goodiebag.pinview.Pinview
-            android:id="@+id/pinview8"
+            android:id="@+id/pinview7"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:inputType="text"
@@ -145,5 +145,10 @@
             app:pinLength="8"
             app:pinWidth="40dp" />
 
+        <Button
+            android:id="@+id/clearButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="clear all"/>
     </LinearLayout>
 </ScrollView>
