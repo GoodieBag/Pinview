@@ -89,7 +89,7 @@ class Pinview @JvmOverloads constructor(
     private var fromSetValue = false
     private var mForceKeyboard = true
 
-    private var lastAppliedPinHeight = 0 // For auto adjusting to square pin sizes
+    private var appliedPinHeight = 0 // For auto adjusting to square pin sizes
 
     enum class InputType {
         TEXT, NUMBER
@@ -119,9 +119,10 @@ class Pinview @JvmOverloads constructor(
         mPinHeight *= DENSITY.toInt()
         mPinWidth *= DENSITY.toInt()
         mSplitWidth *= DENSITY.toInt()
+        appliedPinHeight = if (mPinHeight > 0) mPinHeight else mPinWidth
         setWillNotDraw(false)
         initAttributes(context, attrs, defStyleAttr)
-        params = LayoutParams(mPinWidth, mPinHeight)
+        params = LayoutParams(mPinWidth, appliedPinHeight)
         orientation = HORIZONTAL
         createEditTexts()
         super.setOnClickListener {
@@ -158,11 +159,11 @@ class Pinview @JvmOverloads constructor(
                         // Pin is too wide, we need to reduce it
                         useWeightedWidthPins()
                     }
-                } else if (mPinHeight == 0 && abs(lastPin.width - lastAppliedPinHeight) > 0.1f) {
+                } else if (mPinHeight == 0 && abs(lastPin.width - appliedPinHeight) > 0.1f) {
                     // allow some difference, in case something moves on layout and reduce risk of infinite layout loop, and because its floats and equal is bad
                     // Check if something changed they layout or sizing
-                    lastAppliedPinHeight = lastPin.width
-                    params.height = lastAppliedPinHeight
+                    appliedPinHeight = lastPin.width
+                    params.height = appliedPinHeight
                     updateEditTexts()
                     requestLayout()
                 } else {

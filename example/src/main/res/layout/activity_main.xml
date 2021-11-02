@@ -120,7 +120,8 @@
             app:inputType="text"
             app:pinHeight="0dp"
             app:pinLength="4"
-            app:pinWidth="40dp" />
+            app:pinWidth="40dp"
+            app:textSize="@dimen/desired_text_size" />
 
         <com.goodiebag.pinview.Pinview
             android:id="@+id/pinview6"
@@ -129,7 +130,8 @@
             app:inputType="text"
             app:pinHeight="0dp"
             app:pinLength="8"
-            app:pinWidth="40dp" />
+            app:pinWidth="40dp"
+            app:textSize="@dimen/desired_text_size" />
 
         <TextView
             android:layout_width="match_parent"
@@ -149,6 +151,6 @@
             android:id="@+id/clearButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="clear all"/>
+            android:text="clear all" />
     </LinearLayout>
 </ScrollView>
