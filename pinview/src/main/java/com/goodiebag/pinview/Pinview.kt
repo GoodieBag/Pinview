@@ -57,8 +57,11 @@ import kotlin.math.max
  * @author Pavan
  * @author Koushik
  */
-class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : LinearLayout(context, attrs, defStyleAttr), TextWatcher,
-    View.OnFocusChangeListener, View.OnKeyListener {
+class Pinview @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : LinearLayout(context, attrs, defStyleAttr), TextWatcher, View.OnFocusChangeListener, View.OnKeyListener {
     private val DENSITY = getContext().resources.displayMetrics.density
 
     /**
@@ -82,6 +85,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
     private var mHint: String? = ""
     private var inputType = InputType.TEXT
     private var mListener: PinViewEventListener? = null
+    private var mWidthUpdateListener: (Pinview, Int) -> Unit = { _, _ -> }
     private var fromSetValue = false
     private var mForceKeyboard = true
 
@@ -161,6 +165,8 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
                     params.height = lastAppliedPinHeight
                     updateEditTexts()
                     requestLayout()
+                } else {
+                    mWidthUpdateListener(this, lastPin.width)
                 }
             }
         }
@@ -530,6 +536,16 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
             }
         }
 
+    var textSize: Int
+        get() = mTextSize
+        set(value) {
+            // Don't requestLayout if no change
+            if (value != mTextSize) {
+                mTextSize = value
+                updateEditTexts()
+            }
+        }
+
     /**
      * Ensure the pins fit within the Pinview parent.
      */
@@ -604,14 +620,13 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         mListener = null
     }
 
+    fun setPinViewWidthUpdateListener(listener: (Pinview, Int) -> Unit) {
+        mWidthUpdateListener = listener
+    }
+
     fun showCursor(status: Boolean) {
         mCursorVisible = status
         this.pinTextViewList.forEach { it.isCursorVisible = status }
-    }
-
-    fun setTextSize(textSize: Int) {
-        mTextSize = textSize
-        updateEditTexts()
     }
 
     fun setTypeface(typeFace: Typeface?) {
