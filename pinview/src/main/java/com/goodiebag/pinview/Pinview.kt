@@ -22,6 +22,7 @@ package com.goodiebag.pinview
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PorterDuff
+import android.graphics.Typeface
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
@@ -61,13 +62,14 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
      * Attributes
      */
     private var mPinLength = 4
-    private val editTextList: MutableList<EditText>? = ArrayList()
+    private val editTextList: MutableList<EditText> = ArrayList()
     private var mPinWidth = 50
     private var mTextSize = 12
     private var mPinHeight = 50
     private var mSplitWidth = 20
     private var mCursorVisible = false
     private var mDelPressed = false
+    private var mTypeFace: Typeface? = null
 
     @get:DrawableRes
     @DrawableRes
@@ -89,13 +91,13 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
      * Interface for onDataEntered event.
      */
     interface PinViewEventListener {
-        fun onDataEntered(pinview: Pinview?, fromUser: Boolean)
+        fun onDataEntered(pinview: Pinview, fromUser: Boolean)
     }
 
     var mClickListener: OnClickListener? = null
-    var currentFocus: View? = null
+    var currentFocus: View? = null // Will be null if there are no pin-views
     var filters = arrayOfNulls<InputFilter>(1)
-    var params: LayoutParams? = null
+    lateinit var params: LayoutParams
 
     /**
      * A method to take care of all the initialisations.
@@ -116,10 +118,10 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         createEditTexts()
         super.setOnClickListener {
             var focused = false
-            for (editText in editTextList!!) {
+            for (editText in editTextList) {
                 if (editText.length() == 0) {
                     editText.requestFocus()
-                    openKeyboard()
+                    openKeyboardIfForced()
                     focused = true
                     break
                 }
@@ -127,12 +129,10 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
             if (!focused && editTextList.size > 0) { // Focus the last view
                 editTextList[editTextList.size - 1].requestFocus()
             }
-            if (mClickListener != null) {
-                mClickListener!!.onClick(this@Pinview)
-            }
+            mClickListener?.onClick(this@Pinview)
         }
         // Bring up the keyboard
-        val firstEditText: View? = editTextList?.first()
+        val firstEditText: View? = editTextList.firstOrNull() // list is empty, if pinLength==0
         firstEditText?.postDelayed({ openKeyboard() }, 200)
         updateEnabledState()
     }
@@ -142,12 +142,13 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
      */
     private fun createEditTexts() {
         removeAllViews()
-        editTextList!!.clear()
+        editTextList.clear()
         var editText: EditText
 
         for (i in 0 until mPinLength) {
             editText = EditText(context)
             editText.textSize = mTextSize.toFloat()
+            mTypeFace.let { editText.typeface = it }
             editTextList.add(i, editText)
             this.addView(editText)
             generateOneEditText(editText, "" + i)
@@ -173,7 +174,9 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         mPinHeight = array.getDimension(R.styleable.Pinview_pinHeight, mPinHeight.toFloat()).toInt()
         mPinWidth = array.getDimension(R.styleable.Pinview_pinWidth, mPinWidth.toFloat()).toInt()
         mSplitWidth = array.getDimension(R.styleable.Pinview_splitWidth, mSplitWidth.toFloat()).toInt()
-        mTextSize = array.getDimension(R.styleable.Pinview_textSize, mTextSize.toFloat()).toInt()
+        // We expect mTextSize to be sp, but we allow specifying via xml in any dimension resource as standard. Hence the scaling here
+        val scaledDensity = resources.displayMetrics.scaledDensity
+        mTextSize = (array.getDimensionPixelSize(R.styleable.Pinview_textSize, (mTextSize * scaledDensity).toInt()) / scaledDensity).toInt()
         mCursorVisible = array.getBoolean(R.styleable.Pinview_cursorVisible, mCursorVisible)
         mPassword = array.getBoolean(R.styleable.Pinview_password, mPassword)
         mForceKeyboard = array.getBoolean(R.styleable.Pinview_forceKeyboard, mForceKeyboard)
@@ -241,7 +244,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
     var value: String
         get() {
             val sb = StringBuilder()
-            for (et in editTextList!!) {
+            for (et in editTextList) {
                 sb.append(et.text.toString())
             }
             return sb.toString()
@@ -279,23 +282,32 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         }
 
     /**
-     * Requsets focus on current pin view and opens keyboard if forceKeyboard is enabled.
+     * Requests focus on current pin view and opens keyboard if forceKeyboard is enabled.
+     * If open keyboard is disabled in XML, use openKeyboard()
      *
-     * @return the current focused pin view. It can be used to open softkeyboard manually.
+     * @return the current focused pin view. It can be used to open soft-keyboard manually.
      */
-    fun requestPinEntryFocus(): View? {
+    fun requestPinEntryFocus(): View {
         val currentTag = max(0, indexOfCurrentFocus)
-        val currentEditText = editTextList?.get(currentTag)
-        currentEditText?.requestFocus()
-        openKeyboard()
+        val currentEditText = editTextList[currentTag]
+        currentEditText.requestFocus()
+        openKeyboardIfForced()
         return currentEditText
     }
 
-    private fun openKeyboard() {
+    private fun openKeyboardIfForced() {
         if (mForceKeyboard) {
-            val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-            inputMethodManager?.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+            openKeyboard()
         }
+    }
+
+    /**
+     * Request the keyboard to open on the currently focused view
+     */
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun openKeyboard() {
+        val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
     }
 
     /**
@@ -312,7 +324,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
                 mDelPressed = false
                 return
             }
-            for (editText in editTextList!!) {
+            for (editText in editTextList) {
                 if (editText.length() == 0) {
                     if (editText !== view) {
                         editText.requestFocus()
@@ -339,13 +351,13 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
      */
     private fun setTransformation() {
         if (mPassword) {
-            for (editText in editTextList!!) {
+            for (editText in editTextList) {
                 editText.removeTextChangedListener(this)
                 editText.transformationMethod = PinTransformationMethod()
                 editText.addTextChangedListener(this)
             }
         } else {
-            for (editText in editTextList!!) {
+            for (editText in editTextList) {
                 editText.removeTextChangedListener(this)
                 editText.transformationMethod = null
                 editText.addTextChangedListener(this)
@@ -372,9 +384,9 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
                 var delay: Long = 1
                 if (mPassword) delay = 25
                 postDelayed({
-                    val nextEditText = editTextList?.get(currentTag + 1)
-                    nextEditText?.isEnabled = true
-                    nextEditText?.requestFocus()
+                    val nextEditText = editTextList[currentTag + 1]
+                    nextEditText.isEnabled = true
+                    nextEditText.requestFocus()
                 }, delay)
             }
 
@@ -389,12 +401,12 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
             this.mDelPressed = true
 
             //For the last cell of the non password text fields. Clear the text without changing the focus.
-            if (!this.editTextList?.get(currentTag)?.text.isNullOrEmpty()) {
-                this.editTextList?.get(currentTag)?.setText("")
+            if (!this.editTextList[currentTag].text.isNullOrEmpty()) {
+                this.editTextList[currentTag].setText("")
             }
         }
 
-        this.editTextList?.forEach { item ->
+        this.editTextList.forEach { item ->
             if (item.text.isNotEmpty()) {
                 val index = this.editTextList.indexOf(item) + 1
                 if (!this.fromSetValue && index == mPinLength) {
@@ -412,7 +424,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
     private fun updateEnabledState() {
         val currentTag = max(0, indexOfCurrentFocus)
 
-        for (index in editTextList!!.indices) {
+        for (index in editTextList.indices) {
             val editText = editTextList[index]
             editText.isEnabled = index <= currentTag
         }
@@ -432,26 +444,26 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         if (keyEvent.action == KeyEvent.ACTION_UP && i == KeyEvent.KEYCODE_DEL) {
             // Perform action on Del press
             val currentTag = indexOfCurrentFocus
-            val currentEditText = editTextList?.get(currentTag)?.text
+            val currentEditText = editTextList[currentTag].text
             //Last tile of the number pad. Clear the edit text without changing the focus.
             if (inputType == InputType.NUMBER && currentTag == mPinLength - 1 && finalNumberPin ||
                     mPassword && currentTag == mPinLength - 1 && finalNumberPin) {
                 if (!currentEditText.isNullOrEmpty()) {
-                    this.editTextList?.get(currentTag)?.setText("")
+                    this.editTextList[currentTag].setText("")
                 }
                 finalNumberPin = false
             } else if (currentTag > 0) {
                 mDelPressed = true
                 if (currentEditText.isNullOrEmpty()) {
                     //Takes it back one tile
-                    this.editTextList?.get(currentTag - 1)?.requestFocus()
+                    this.editTextList[currentTag - 1].requestFocus()
                 }
-                this.editTextList?.get(currentTag)?.setText("")
+                this.editTextList[currentTag].setText("")
             } else {
                 //For the first cell
 
                 if (!currentEditText.isNullOrEmpty()) {
-                    editTextList?.get(currentTag)?.setText("")
+                    editTextList[currentTag].setText("")
                 }
             }
             return true
@@ -463,7 +475,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
      * Getters and Setters
      */
     private val indexOfCurrentFocus: Int
-        get() = editTextList!!.indexOf(currentFocus)
+        get() = editTextList.indexOf(currentFocus)
 
     var splitWidth: Int
         get() = mSplitWidth
@@ -471,7 +483,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
             mSplitWidth = splitWidth
             val margin = splitWidth / 2
             params?.setMargins(margin, margin, margin, margin)
-            this.editTextList?.forEach {
+            this.editTextList.forEach {
                 it.layoutParams = params
             }
         }
@@ -481,7 +493,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         set(pinHeight) {
             mPinHeight = pinHeight
             params?.height = pinHeight
-            this.editTextList?.forEach {
+            this.editTextList.forEach {
                 it.layoutParams = params
             }
         }
@@ -491,7 +503,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         set(pinWidth) {
             mPinWidth = pinWidth
             params?.width = pinWidth
-            this.editTextList?.forEach {
+            this.editTextList.forEach {
                 it.layoutParams = params
             }
         }
@@ -514,14 +526,14 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         get() = mHint
         set(mHint) {
             this.mHint = mHint
-            this.editTextList?.forEach {
+            this.editTextList.forEach {
                 it.hint = mHint
             }
         }
 
     fun setPinBackgroundRes(@DrawableRes res: Int) {
         pinBackground = res
-        this.editTextList?.forEach {
+        this.editTextList.forEach {
             it.setBackgroundResource(res)
         }
     }
@@ -537,7 +549,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
     fun setInputType(inputType: InputType) {
         this.inputType = inputType
         val keyInputType = keyboardInputType
-        editTextList?.forEach {
+        editTextList.forEach {
             it.inputType = keyInputType
         }
     }
@@ -546,30 +558,55 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         mListener = listener
     }
 
+    fun setPinViewEventListener(listener: (Pinview, Boolean) -> Unit) {
+        mListener = object: PinViewEventListener {
+            override fun onDataEntered(pinview: Pinview, fromUser: Boolean) {
+                listener(pinview, fromUser)
+            }
+        }
+    }
+
+    fun clearPinViewEventListener() {
+        mListener = null
+    }
+
     fun showCursor(status: Boolean) {
         mCursorVisible = status
-        this.editTextList?.forEach { it.isCursorVisible = status }
+        this.editTextList.forEach { it.isCursorVisible = status }
     }
 
     fun setTextSize(textSize: Int) {
         mTextSize = textSize
-        this.editTextList?.forEach { it.textSize = mTextSize.toFloat() }
+        updateEditTexts()
     }
 
+    fun setTypeface(typeFace: Typeface?) {
+        mTypeFace = typeFace
+        updateEditTexts()
+    }
+
+    private fun updateEditTexts() {
+        for (edt in editTextList) {
+            edt.textSize = mTextSize.toFloat()
+            edt.layoutParams = params
+            mTypeFace?.let { edt.typeface = it }
+        }
+    }
+    
     fun setCursorColor(@ColorInt color: Int) {
-        this.editTextList?.forEach {
+        this.editTextList.forEach {
             setCursorColor(it, color)
         }
     }
 
     fun setTextColor(@ColorInt color: Int) {
-        this.editTextList?.forEach {
+        this.editTextList.forEach {
             it.setTextColor(color)
         }
     }
 
     fun setCursorShape(@DrawableRes shape: Int) {
-        editTextList?.forEach {
+        editTextList.forEach {
             try {
                 val field = TextView::class.java.getDeclaredField("mCursorDrawableRes")
                 field.isAccessible = true

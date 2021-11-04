@@ -1,5 +1,6 @@
 package com.goodiebag.pinview.example
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
@@ -13,11 +14,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val pinview1 = findViewById<Pinview>(R.id.pinview1)
-        pinview1.setPinViewEventListener(object : PinViewEventListener {
-            override fun onDataEntered(pinview: Pinview?, fromUser: Boolean) {
-                Toast.makeText(this@MainActivity, pinview!!.value, Toast.LENGTH_SHORT).show()
-            }
-        })
+        pinview1.setPinViewEventListener { pinview: Pinview, fromUser: Boolean ->
+            Toast.makeText(this@MainActivity, pinview.value, Toast.LENGTH_SHORT).show()
+        }
+        setFont(pinview1)
 
         // pinView Customize
         val pinview5 = findViewById<Pinview>(R.id.pinview5)
@@ -29,4 +29,11 @@ class MainActivity : AppCompatActivity() {
             showCursor(true)
         }
     }
+
+    @SuppressLint("NewApi")
+    private fun setFont(pinview1: Pinview) {
+        val typeface = resources.getFont(R.font.poppins_semibold)
+        pinview1.setTypeface(typeface)
+    }
+
 }
