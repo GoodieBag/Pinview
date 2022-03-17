@@ -131,7 +131,7 @@ class Pinview @JvmOverloads constructor(
                 pin.maxWidth = mPinWidth
                 if (pin.length() == 0) {
                     pin.requestFocus()
-                    openKeyboardIfForced()
+                    openKeyboard()
                     focused = true
                     break
                 }
@@ -143,7 +143,7 @@ class Pinview @JvmOverloads constructor(
         }
         // Bring up the keyboard
         val firstEditText: View? = pinTextViewList.firstOrNull() // list is empty, if pinLength==0
-        firstEditText?.postDelayed({ openKeyboard() }, 200)
+        firstEditText?.postDelayed({ openKeyboardIfForced() }, 200)
         updateEnabledState()
         // View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom
         val listener = OnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
@@ -328,7 +328,7 @@ class Pinview @JvmOverloads constructor(
 
     /**
      * Requests focus on current pin view and opens keyboard if forceKeyboard is enabled.
-     * If open keyboard is disabled in XML, use openKeyboard()
+     * If open keyboard is disabled in XML, use openKeyboard() after calling this method, to explicitly open keyboard.
      *
      * @return the current focused pin view. It can be used to open soft-keyboard manually.
      */
@@ -336,7 +336,7 @@ class Pinview @JvmOverloads constructor(
         val currentTag = max(0, indexOfCurrentFocus)
         val currentEditText = pinTextViewList[currentTag]
         currentEditText.requestFocus()
-        openKeyboardIfForced()
+        openKeyboardIfForced() // See javadoc for this method.
         return currentEditText
     }
 
@@ -352,7 +352,10 @@ class Pinview @JvmOverloads constructor(
     @Suppress("MemberVisibilityCanBePrivate")
     fun openKeyboard() {
         val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+        val currentTag = max(0, indexOfCurrentFocus)
+        val currentEditText = pinTextViewList[currentTag]
+        // See https://developer.android.com/reference/android/view/inputmethod/InputMethodManager#SHOW_FORCED
+        inputMethodManager.showSoftInput(currentEditText, InputMethodManager.SHOW_FORCED)
     }
 
     /**
@@ -676,6 +679,8 @@ class Pinview @JvmOverloads constructor(
         }
     }
 
+    @SuppressLint("SoonBlockedPrivateApi")
+    @Deprecated("Will fail when targeting API-31 and above")
     fun setCursorShape(@DrawableRes shape: Int) {
         pinTextViewList.forEach {
             try {
@@ -687,6 +692,8 @@ class Pinview @JvmOverloads constructor(
         }
     }
 
+    @SuppressLint("SoonBlockedPrivateApi")
+    @Deprecated("Will fail when targeting API-31 and above")
     private fun setCursorColor(view: TextView, @ColorInt color: Int) {
         try {
             // Get the cursor resource id
