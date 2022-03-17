@@ -608,6 +608,8 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         }
     }
 
+    @SuppressLint("SoonBlockedPrivateApi")
+    @Deprecated("Will fail when targeting API-31 and above")
     fun setCursorShape(@DrawableRes shape: Int) {
         editTextList.forEach {
             try {
@@ -620,6 +622,8 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
 
     }
 
+    @SuppressLint("SoonBlockedPrivateApi")
+    @Deprecated("Will fail when targeting API-31 and above")
     private fun setCursorColor(view: EditText, @ColorInt color: Int) {
         try {
             // Get the cursor resource id
