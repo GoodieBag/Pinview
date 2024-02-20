@@ -67,12 +67,16 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
     private var mPinHeight = 50
     private var mSplitWidth = 20
     private var mCursorVisible = false
+    private var mHidePin = false
     private var mDelPressed = false
 
     @get:DrawableRes
     @DrawableRes
     var pinBackground = R.drawable.sample_background
         private set
+
+    @DrawableRes
+    private var mFilledBackground = R.drawable.sample_background
     private var mPassword = false
     private var mHint: String? = ""
     private var inputType = InputType.TEXT
@@ -169,12 +173,16 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
 
         val array = context.obtainStyledAttributes(attrs, R.styleable.Pinview, defStyleAttr, 0)
         pinBackground = array.getResourceId(R.styleable.Pinview_pinBackground, pinBackground)
+        mFilledBackground =
+            array.getResourceId(R.styleable.Pinview_filledBackground, pinBackground)
+
         mPinLength = array.getInt(R.styleable.Pinview_pinLength, mPinLength)
         mPinHeight = array.getDimension(R.styleable.Pinview_pinHeight, mPinHeight.toFloat()).toInt()
         mPinWidth = array.getDimension(R.styleable.Pinview_pinWidth, mPinWidth.toFloat()).toInt()
         mSplitWidth = array.getDimension(R.styleable.Pinview_splitWidth, mSplitWidth.toFloat()).toInt()
         mTextSize = array.getDimension(R.styleable.Pinview_textSize, mTextSize.toFloat()).toInt()
         mCursorVisible = array.getBoolean(R.styleable.Pinview_cursorVisible, mCursorVisible)
+        mHidePin = array.getBoolean(R.styleable.Pinview_hidePin, mHidePin)
         mPassword = array.getBoolean(R.styleable.Pinview_password, mPassword)
         mForceKeyboard = array.getBoolean(R.styleable.Pinview_forceKeyboard, mForceKeyboard)
         mHint = array.getString(R.styleable.Pinview_hint)
@@ -200,6 +208,9 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         styleEditText.layoutParams = params
         styleEditText.gravity = Gravity.CENTER
         styleEditText.isCursorVisible = mCursorVisible
+        if (mHidePin) {
+            styleEditText.setTextColor(context.resources.getColor(R.color.transparent))
+        }
 
         if (!mCursorVisible) {
             styleEditText.isClickable = false
@@ -353,6 +364,15 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         }
     }
 
+    fun clearOtp() {
+        for (editText in editTextList!!) {
+            editText?.setText("")
+        }
+        if (editTextList!!.size > 0) {
+            editTextList!![0].requestFocus()
+        }
+    }
+
     override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
 
     /**
@@ -404,6 +424,8 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         }
 
         updateEnabledState()
+
+        setEditTextsBackgroundResource()
     }
 
     /**
@@ -454,6 +476,7 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
                     editTextList?.get(currentTag)?.setText("")
                 }
             }
+            setEditTextsBackgroundResource()
             return true
         }
         return false
@@ -523,6 +546,16 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         pinBackground = res
         this.editTextList?.forEach {
             it.setBackgroundResource(res)
+        }
+    }
+
+    private fun setEditTextsBackgroundResource() {
+        for (editText in editTextList!!) {
+            if (editText.text.toString().isNotEmpty()) {
+                editText.setBackgroundResource(mFilledBackground)
+            } else {
+                editText.setBackgroundResource(pinBackground)
+            }
         }
     }
 

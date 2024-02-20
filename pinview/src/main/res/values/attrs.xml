@@ -6,11 +6,13 @@
         <attr name="pinWidth" format="dimension"/>
         <attr name="pinHeight" format="dimension"/>
         <attr name="splitWidth" format="dimension"/>
+        <attr name="hidePin" format="boolean"/>
         <attr name="cursorVisible" format="boolean"/>
         <attr name="password" format="boolean"/>
         <attr name="forceKeyboard" format ="boolean"/>
         <attr name="hint" format="string"/>
         <attr name="inputType"/>
+        <attr name="filledBackground" format="reference"/>
         <attr name="textSize" format="dimension"/>
     </declare-styleable>
     <attr name="inputType" format="enum">
