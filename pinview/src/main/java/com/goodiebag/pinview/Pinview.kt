@@ -609,4 +609,8 @@ class Pinview @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         gravity = Gravity.CENTER
         init(context, attrs, defStyleAttr)
     }
+
+    fun setForceKeyboard(mForceKeyboard: Boolean) {
+        this.mForceKeyboard = mForceKeyboard
+    }
 }
